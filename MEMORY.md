@@ -40,6 +40,12 @@
   - `run_daily.py`：自动化定时任务运行，模板曾为**精简版**（缺上述功能）
 - **修改日练习页 HTML 模板时必须同步两者**，否则自动化（run_daily.py）会覆盖手动修复的结果。
 - 已修复：run_daily.py 的 PAGE 模板已替换为与 push_day.py 一致的完整版。后续改模板时 `grep` 两个文件确认一致。
+- **第三个生成器 `gen_future.py`（2026-08-20 新增，预生成/提前预习用）**：它**不自己维护模板**，而是用正则从 `run_daily.py` 提取 `PAGE` 字符串 → 与每日自动化模板**自动同步**（改 run_daily 模板时 gen_future 无需手动改）。生成未来 day<date>.html + 侧车时**不碰 master.json** 的 introduced/mastery，真实日期到时 run_daily 无缝接管覆盖。
+
+## 日历提前预习（2026-08-20 新增）
+- `gen_future.py` 预生成明天起 N 天（默认22）day 页后，日历自动识别"有 day<date>.json 侧车、晚于今天、且不在 days.json"的日期为 `previewDays`，橙色高亮+可点击 `showDay` 直接学习（同享音频/自评/详情），页头「可预习」快捷条。
+- 真实自动化每日跑到该日时会把它登记进 days.json → 日历由橙(预览)转绿(已练习)，过渡无缝。
+- 选句与未来自动化一致：首个未引入句起按 id 每5句一批；超总句数/超 introDays 进复习预览（按 id 轮转取5句，使各未来日展示不同句式）。
 
 ## serve.py 生成器内存锁铁律（2026-08-19 踩坑，关键！）
 - **现象**：改了生成器（如 gen_views_html.py 新增 mastery.js 引用）重跑后，文件在磁盘上正确，但一访问页面/一回写自评，review/calendar 又变回旧版（缺 mastery.js）。
