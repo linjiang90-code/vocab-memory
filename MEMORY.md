@@ -41,6 +41,7 @@
 - **修改日练习页 HTML 模板时必须同步两者**，否则自动化（run_daily.py）会覆盖手动修复的结果。
 - 已修复：run_daily.py 的 PAGE 模板已替换为与 push_day.py 一致的完整版。后续改模板时 `grep` 两个文件确认一致。
 - **第三个生成器 `gen_future.py`（2026-08-20 新增，预生成/提前预习用）**：它**不自己维护模板**，而是用正则从 `run_daily.py` 提取 `PAGE` 字符串 → 与每日自动化模板**自动同步**（改 run_daily 模板时 gen_future 无需手动改）。生成未来 day<date>.html + 侧车时**不碰 master.json** 的 introduced/mastery，真实日期到时 run_daily 无缝接管覆盖。
+- **模板必须使用实际 UTF-8 字符，严禁 \uXXXX 转义（2026-08-22 踩坑）**：Python 源码中的 `\uXXXX` 在源码文本层面是字面量（仅 exec/赋值时解释器才解码）。gen_future.py 用正则提取源码模板时会拿到未解码字面文本 → HTML 里浏览器原样显示为乱码。run_daily.py 自身执行不受影响（解释器会解码），但任何文本级提取都会中招。已将 run_daily.py PAGE 模板 381 处 \uXXXX 全部解码为 UTF-8。后续往模板加中文时直接写汉字。
 
 ## 日历提前预习（2026-08-20 新增）
 - `gen_future.py` 预生成明天起 N 天（默认22）day 页后，日历自动识别"有 day<date>.json 侧车、晚于今天、且不在 days.json"的日期为 `previewDays`，橙色高亮+可点击 `showDay` 直接学习（同享音频/自评/详情），页头「可预习」快捷条。
