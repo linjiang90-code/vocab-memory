@@ -1,5 +1,23 @@
 # 自动化执行记录：每日英语口语推送（词力词汇教练）
 
+## 最近执行：2026-09-03
+- **dayIndex = 22**（today 2026-09-03 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 22 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=31 ≠ 22）
+- **选中句**：[16, 8, 9, 10, 11]（按 mastery 升序+reviewCount 降序取前5，全为 introduced 句）
+  - s16 My luggage didn't arrive. (行李未到, short)
+  - s8 Could you recommend a good local restaurant… (推荐餐厅, long)
+  - s9 I was wondering if you'd like to grab a coffee… (邀约喝咖啡, long)
+  - s10 I seem to have lost my way… (迷路问路, long)
+  - s11 Where can I buy a ticket to the city center? (买票, short)
+- **增强内容**：5 句 enh 均已齐备（fullIpa/variants/scenes/grammar/pron）
+- **音频**：s8/s9/s10/s11/s16.mp3 均存在，无需新生成
+- **写回 master.json**：5 句 lastReviewed=2026-09-03、reviewCount+1、mastery+1（s16: m1→2, rc→7；s8/s9/s10/s11: m1→2, rc→2）
+- **生成页**：day2026-09-03.html（25.6KB）✓；gen_master_html.py 重生成 master.html（404KB）✓
+- **服务**：端口 3279 回写服务 `curl /api/status` 返回 ok，已运行，无需重启
+- **数据观察**：原始 learned=65/100，35 句（id 66–100，全 daily 主题，32 short+3 long）因 introDays 内漏跑未 introduced。
+- **补学修复（同次执行追加）**：经核查，id 66–100 已具备完整 enh（fullIpa/variants/scenes/grammar/pron 均非空）+ 音频文件齐全，仅 introduced 标志未翻转。已将 35 句 introduced=true（introducedDay=22、lastReviewed=null、reviewCount=0、mastery=0、dueDate=null），使其以最高优先进入复习轮转（后续每日自动优先复习这批）。master.json 写回后重跑 gen_master_html.py + gen_views_html.py：learned 65→100/100，review.html=100 learned，calendar 已同步。修复可逆（改回 introduced=false 即可）。下次扩展日仍为 day31。
+
 ## 最近执行：2026-09-02
 - **dayIndex = 21**（today 2026-09-02 − startDate 2026-08-13 + 1）
 - **模式**：review（dayIndex 21 > introDays 20，随机复习，非新学）
