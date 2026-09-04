@@ -46,3 +46,20 @@
 - **未重跑 run_daily.py**：该脚本无幂等守卫，重跑会换选不同 5 句 + 重复 mastery 自增，损坏数据。直接复用既有推送结果交付任务卡。
 - 服务 3279 正常（/api/status ok）；扩展未触发（nextExpansionDay=31≠21）。
 - 数据观察：learned=65/100，introDays=20 内未全学完（约 7 天自动化漏跑），35 句未 introduced 且 review 阶段不再进入新学池 → 后续建议补学或加幂等守卫。
+
+## 最近执行：2026-09-04
+- **dayIndex = 23**（today 2026-09-04 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 23 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=31 ≠ 23；expansionsDone=0）
+- **选中句**：[66, 67, 68, 69, 70]（review 池按 mastery 升序+reviewCount 降序；此批为 09-03 补学的 66–100 组，mastery=0 最高优先）
+  - s66 Are you free this weekend?（周末邀约, short）
+  - s67 Sorry, I can't make it.（婉拒, short）
+  - s68 Maybe another time.（改期, short）
+  - s69 What's the weather like today?（天气闲聊, short）
+  - s70 It's raining cats and dogs.（天气闲聊, short）
+- **增强内容**：5 句 enh 均 COMPLETE（fullIpa/variants(3)/scenes(3)/grammar/pron 全非空，源自 09-03 补学批量注入）
+- **音频**：s66–s70.mp3 均存在，无需新生成
+- **写回 master.json**：5 句 lastReviewed=2026-09-04、reviewCount 0→1、mastery 0→1、introduced 保持 true（today_new=0）
+- **生成页**：run_daily.py 覆盖旧 gen_future 预览页 → day2026-09-04.html（23.5KB，原 24.6KB）✓；gen_master_html.py 重生成 master.html（404KB）✓
+- **服务**：端口 3279 回写服务 `curl /api/status` 返回 ok，已运行，无需重启
+- **幂等守卫**：执行前校验 master.json 无 lastReviewed==2026-09-04 句 → 确认今日首次推送，安全执行（避免重复 mastery 自增）
