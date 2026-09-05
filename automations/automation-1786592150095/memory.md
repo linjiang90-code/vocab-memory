@@ -1,5 +1,22 @@
 # 自动化执行记录：每日英语口语推送（词力词汇教练）
 
+## 最近执行：2026-09-05
+- **dayIndex = 24**（today 2026-09-05 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 24 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=31 ≠ 24；expansionsDone=0）
+- **选中句**：[71, 72, 73, 74, 75]（review 池按 mastery 升序+reviewCount 降序；66–100 组 mastery=1 优先轮转）
+  - s71 I'm stuck in traffic, so I might be a few minutes late.（堵车迟到, long）
+  - s72 How was your day?（问候, short）
+  - s73 I had a long day at work.（工作闲聊, short）
+  - s74 Could you do me a favor?（请求帮忙, short）
+  - s75 Sure, no problem.（爽快答应, short）
+- **增强内容**：5 句 enh 均 COMPLETE（源自 09-03 补学批量注入，fullIpa/variants/scenes/grammar/pron 全非空）
+- **音频**：s71–s75.mp3 均存在，无需新生成
+- **写回 master.json**：5 句 lastReviewed=2026-09-05、reviewCount 0→1、mastery 0→1、introduced 保持 true（today_new=0）
+- **生成页**：run_daily.py 覆盖旧 gen_future 预览页 → day2026-09-05.html ✓；gen_master_html.py 重生成 master.html（404KB）✓
+- **服务**：端口 3279 回写服务 `curl /api/status` 返回 ok，已运行，无需重启
+- **幂等守卫**：执行前校验 master.json 无 lastReviewed==2026-09-05 句 → 今日首次推送，安全执行
+
 ## 最近执行：2026-09-03
 - **dayIndex = 22**（today 2026-09-03 − startDate 2026-08-13 + 1）
 - **模式**：review（dayIndex 22 > introDays 20，随机复习，非新学）
