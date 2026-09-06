@@ -80,3 +80,21 @@
 - **生成页**：run_daily.py 覆盖旧 gen_future 预览页 → day2026-09-04.html（23.5KB，原 24.6KB）✓；gen_master_html.py 重生成 master.html（404KB）✓
 - **服务**：端口 3279 回写服务 `curl /api/status` 返回 ok，已运行，无需重启
 - **幂等守卫**：执行前校验 master.json 无 lastReviewed==2026-09-04 句 → 确认今日首次推送，安全执行（避免重复 mastery 自增）
+
+## 最近执行：2026-09-06
+- **dayIndex = 25**（today 2026-09-06 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 25 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=31 ≠ 25；expansionsDone=0）
+- **选中句**：[76, 77, 78, 79, 80]（review 池按 mastery 升序+reviewCount 降序；76–80 此前未复习过 mastery=0 最高优先）
+  - s76 I'm really sorry to hear that; is there anything I can do to help?（慰问, long）
+  - s77 Congratulations on your promotion!（祝贺, short）
+  - s78 Thank you for inviting me.（致谢, short）
+  - s79 You're welcome.（回应致谢, short）
+  - s80 Excuse me, could you pass the salt?（餐桌礼仪, short）
+- **增强内容**：5 句 enh 均 COMPLETE（base 100 句预置 fullIpa/variants/scenes/grammar/pron，非空）
+- **音频**：s76–s80.mp3 均存在，无需新生成
+- **写回 master.json**：5 句 lastReviewed=2026-09-06、reviewCount 0→1、mastery 0→1、introduced 保持 true（today_new=0）
+- **生成页**：run_daily.py 覆盖旧 gen_future 预览页 → day2026-09-06.html ✓；gen_master_html.py 重生成 master.html（mtime 09:07）✓
+- **服务**：端口 3279 回写服务 `curl /api/status` 返回 ok，已运行，无需重启
+- **幂等守卫**：执行前校验 master.json 无 lastReviewed==2026-09-06 句 → 今日首次推送，安全执行（无重复 mastery 自增）
+- **剩余扩展窗口**：nextExpansionDay=31（还有 6 天），到 day31 将 +50 句进入随机池
