@@ -1,5 +1,22 @@
 # 自动化执行记录：每日英语口语推送（词力词汇教练）
 
+## 最近执行：2026-09-08
+- **dayIndex = 27**（today 2026-09-08 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 27 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=31 ≠ 27；expansionsDone=0）
+- **选中句**：[86, 87, 88, 89, 90]（review 池按 mastery 升序+reviewCount 降序；86–90 此前未复习过 mastery=0 最高优先）
+  - s86 I couldn't agree more.（回应/赞同, short）
+  - s87 Let me think about it.（犹豫/思考, short）
+  - s88 I'll get back to you as soon as I confirm the details with my manager.（回应/回复, long）
+  - s89 Could you speak up, please?（沟通/音量, short）
+  - s90 I didn't catch your name.（沟通/没听清, short）
+- **增强内容**：5 句 enh 均 COMPLETE（base 100 句预置 fullIpa/variants(3)/scenes(3)/grammar/pron 全非空）
+- **音频**：s86–s90.mp3 均存在，无需新生成
+- **写回 master.json**：5 句 lastReviewed=2026-09-08、reviewCount 0→1、mastery 0→1、introduced 保持 true（today_new=0）
+- **生成页**：run_daily.py 覆盖旧 gen_future 预览页 → day2026-09-08.html（mtime 09:04:28）✓；gen_master_html.py 重生成 master.html（mtime 09:04:28）✓
+- **服务**：端口 3279 回写服务 `curl /api/status` 返回 {"ok":true,"port":3279}，已运行无需重启
+- **幂等守卫**：执行前校验 master.json 无 lastReviewed==2026-09-08 句 → 今日首次推送，安全执行（无重复 mastery 自增）
+
 ## 最近执行：2026-09-05
 - **dayIndex = 24**（today 2026-09-05 − startDate 2026-08-13 + 1）
 - **模式**：review（dayIndex 24 > introDays 20，随机复习，非新学）
