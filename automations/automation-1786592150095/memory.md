@@ -1,5 +1,22 @@
 # 自动化执行记录：每日英语口语推送（词力词汇教练）
 
+## 最近执行：2026-09-09
+- **dayIndex = 28**（today 2026-09-09 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 28 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=31 ≠ 28；expansionsDone=0，还差 3 天到扩展日）
+- **选中句**：[91, 92, 93, 94, 95]（review 池按 mastery 升序+reviewCount 降序；91–95 此前未复习过 mastery=0 最高优先，全 daily/short）
+  - s91 What do you mean by that?（澄清/追问, short）
+  - s92 Just to be clear...（澄清/说明, short）
+  - s93 I'm afraid I have to go now.（告别/离开, short）
+  - s94 See you later!（告别, short）
+  - s95 Take care!（告别/关心, short）
+- **增强内容**：5 句 enh 均 COMPLETE（base 100 句预置 fullIpa/variants/scenes/grammar/pron，非空）
+- **音频**：s91–s95.mp3 均存在，无需新生成
+- **写回 master.json**：5 句 lastReviewed=2026-09-09、reviewCount 0→1、mastery 0→1、introduced 保持 true（today_new=0）
+- **生成页**：run_daily.py 覆盖旧 gen_future 预览页（原 Aug 24）→ day2026-09-09.html（mtime 09:11）✓；gen_master_html.py 重生成 master.html（404KB，mtime 09:11）✓
+- **服务**：端口 3279 回写服务 `curl /api/status` 返回 {"ok":true,"port":3279}，已运行无需重启
+- **幂等守卫**：执行前校验 master.json 无 lastReviewed==2026-09-09 句 + day 页为旧预览页(Aug 24) → 今日首次推送，安全执行（无重复 mastery 自增）
+
 ## 最近执行：2026-09-08
 - **dayIndex = 27**（today 2026-09-08 − startDate 2026-08-13 + 1）
 - **模式**：review（dayIndex 27 > introDays 20，随机复习，非新学）

@@ -11,6 +11,7 @@
 ## 运行/部署
 - serve.py 监听 0.0.0.0:3279（无 Basic Auth）。Windows 任务计划程序 vocab-serve（AtStartup+SYSTEM 开机自启+崩溃自重启），每5分钟保活自动化二级看门狗。端口 3279 防火墙放行，公网 125.71.210.3。
 - 沙箱禁用 system 工具，AI 无法重启服务；改 serve.py/生成器后需用户在「任务计划程序」/End+/Run 或重启电脑。
+- 外部活文档接入（2026-09-09）：`GET /cars-2026.html` 动态转发 `CARS_SRC`（车展项目 `2026-08-21-13-30-20/2026市售车型统计表.html`），每次现读、始终最新；仓内 `cars-2026.html` 仅是重启前的快照兜底，路由优先。
 
 ## 页面分工
 - index.html 首页；master.html 100句总览(🔁循环)；day2026-08-XX.html 每日练习(push_day.py/run_daily.py 生成)；review.html/calendar.html 已学回顾/日历(gen_views_html.py 内嵌数据、无 fetch)；day1/day2/day-demo 旧版。
