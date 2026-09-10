@@ -17,6 +17,24 @@
 - **服务**：端口 3279 回写服务 `curl /api/status` 返回 {"ok":true,"port":3279}，已运行无需重启
 - **幂等守卫**：执行前校验 master.json 无 lastReviewed==2026-09-09 句 + day 页为旧预览页(Aug 24) → 今日首次推送，安全执行（无重复 mastery 自增）
 
+## 最近执行：2026-09-10
+- **dayIndex = 29**（today 2026-09-10 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 29 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=31 ≠ 29；expansionsDone=0，还差 2 天到扩展日）
+- **选中句**：[46, 47, 48, 49, 50]（review 池按 mastery 升序+reviewCount 降序；46–50 此前 mastery=1 优先轮转）
+  - s46 Where is the nearest restroom?（问厕所在哪, short）
+  - s47 I lost my wallet.（丢钱包, short）
+  - s48 I need to see a doctor.（看病, short）
+  - s49 Call the police, please.（报警, short）
+  - s50 I've missed my flight.（误机, short）
+- **增强内容**：5 句 enh 均 COMPLETE（fullIpa/variants(3)/scenes(3)/grammar/pron 全非空）
+- **音频**：s46–s50.mp3 均存在，无需新生成
+- **写回 master.json**：5 句 lastReviewed=2026-09-10、reviewCount 1→2、mastery 1→2、introduced 保持 true（today_new=0）
+- **生成页**：run_daily.py 覆盖旧 gen_future 预览页 → day2026-09-10.html（mtime 09:07:04）✓；gen_master_html.py 重生成 master.html（404KB，mtime 09:07:19）✓
+- **服务**：端口 3279 回写服务 `curl /api/status` 返回 {"ok":true,"port":3279}，已运行无需重启
+- **幂等守卫**：执行前校验 master.json 无 lastReviewed==2026-09-10 句 + day2026-09-10.html 为 gen_future 预览页 → 今日首次推送，安全执行（无重复 mastery 自增）
+- **连续学习**：streak=12 天（09-10 回溯至 08-30 连续）；累计 distinct review 日 16；introduced 100/100
+
 ## 最近执行：2026-09-08
 - **dayIndex = 27**（today 2026-09-08 − startDate 2026-08-13 + 1）
 - **模式**：review（dayIndex 27 > introDays 20，随机复习，非新学）
