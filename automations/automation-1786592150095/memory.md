@@ -167,3 +167,21 @@
 - **生成页**：run_daily.py 覆盖旧 gen_future 预览页（原 Aug 24）→ day2026-09-07.html（mtime 09:08:45）✓；gen_master_html.py 重生成 master.html（mtime 09:08:45）✓
 - **服务**：端口 3279 回写服务 `curl /api/status` 返回 {"ok":true,"port":3279}，已运行无需重启
 - **幂等守卫**：执行前校验 master.json 无 lastReviewed==2026-09-07 句 → 今日首次推送，安全执行（无重复 mastery 自增）
+
+## 最近执行：2026-09-11
+- **dayIndex = 30**（today 2026-09-11 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 30 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=31 ≠ 30；expansionsDone=0，还差 1 天到扩展日）
+- **选中句**：[4, 38, 70, 79, 80]（review 池按 mastery 升序+reviewCount 降序轮转）
+  - s4 It's nice to meet you.（寒暄/初次见面, daily, mastery 3→3 rc 3）
+  - s38 Do you accept credit cards?（购物/支付, travel, mastery 2 rc 2）
+  - s70 It's raining cats and dogs.（闲聊/天气, daily, mastery 2 rc 2）
+  - s79 You're welcome.（礼貌/回应, daily, mastery 2 rc 2）
+  - s80 Excuse me, could you pass the salt?（餐桌/礼貌, daily, mastery 2 rc 2）
+- **增强内容**：5 句 enh 均 COMPLETE（fullIpa/variants(3)/scenes(3)/grammar/pron 全非空）
+- **音频**：s4/s38/s70/s79/s80.mp3 均存在，无需新生成
+- **写回 master.json**：5 句 lastReviewed=2026-09-11、reviewCount 各 +1、mastery 各 +1（s4: 2→3，其余 1→2）、introduced 保持 true（today_new=0）
+- **生成页**：run_daily.py → day2026-09-11.html（23.5KB，mtime 09:04）✓；gen_master_html.py 重生成 master.html（1000 句，mtime 09:04）✓
+- **服务**：端口 3279 回写服务 `curl /api/status` 返回 {"ok":true,"port":3279}，已运行无需重启
+- **幂等守卫**：执行前校验 master.json 无 lastReviewed==2026-09-11 句 + day2026-09-11.html 不存在 → 今日首次推送，安全执行（无重复 mastery 自增）
+- **学习总结**：streak=13 天（09-11 回溯至 08-30 连续）；累计 distinct review 日 17；learned 100/1000；今日新学 0、复习 5
