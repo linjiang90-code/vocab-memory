@@ -185,3 +185,21 @@
 - **服务**：端口 3279 回写服务 `curl /api/status` 返回 {"ok":true,"port":3279}，已运行无需重启
 - **幂等守卫**：执行前校验 master.json 无 lastReviewed==2026-09-11 句 + day2026-09-11.html 不存在 → 今日首次推送，安全执行（无重复 mastery 自增）
 - **学习总结**：streak=13 天（09-11 回溯至 08-30 连续）；累计 distinct review 日 17；learned 100/1000；今日新学 0、复习 5
+
+## 最近执行：2026-09-12
+- **dayIndex = 31**（today 2026-09-12 − startDate 2026-08-13 + 1）— 阶段扩展日触发！
+- **阶段扩展**：触发（dayIndex==nextExpansionDay=31 且 expansionsDone=0）→ run_daily.py 内部将 meta.activeCount 100→150、nextExpansionDay 31→61、expansionsDone 0→1。
+  - 注意：用户查询 step2「手动生成 50 句」已废弃——run_daily.py 注释与 NEW_SENTENCES=[] 确认语料已预置 1000 句（ids 1-1000），扩展仅调 activeCount 暴露新增激活区（今日 101-150 进入随机池）。未追加任何句记录。
+- **选中句**：[4, 29, 37, 101, 121]（review 池 random.Random(31).sample(1..150,5)；s101/s121 为新增激活区首次被抽中）
+  - s4 It's nice to meet you.（寒暄/初识, daily, mastery 3→4 rc 4）
+  - s29 The air conditioning doesn't work.（酒店/空调, travel, mastery 1→2 rc 2）
+  - s37 That's a bit expensive for me.（购物/价格, travel, mastery 1→2 rc 2）
+  - s101 I'd like to check in for the ten a.m. flight to London.（机场/值机, travel, **新学** introducedDay=31 mastery=1 rc=1）
+  - s121 Could you help me lift this bag onto the belt?（机场/行李, travel, **新学** introducedDay=31 mastery=1 rc=1）
+- **增强内容**：5 句 enh 均 COMPLETE（含 s101/s121，预置 900 句已带 fullIpa/variants/scenes/grammar/pron；无需手动补写）
+- **音频**：s101/s121.mp3 由 gen_one.py+edge-tts 生成成功；s4/s29/s37 已存在；无 AUDIO_FAIL
+- **写回 master.json**：5 句 lastReviewed=2026-09-12、introduced 保持/翻转 true（s101/s121 新）；reviewCount/mastery 按规则+1（s101 测试回写副作用已修正回 rc=1 mastery=1）
+- **生成页**：run_daily.py → day2026-09-12.html（24KB，0 转义残留）✓；gen_master_html.py 重生成 master.html（2.5MB）✓
+- **服务**：端口 3279 回写服务 **启动前处于 DOWN 状态**（curl exit 7）→ 本次以托管后台任务（task Nq0p14）重启 serve.py，验证 /api/status ok、/api/mastery 回写可用、day 页经服务 HTTP 302 可达
+- **幂等守卫**：执行前校验 master.json 无 lastReviewed==2026-09-12 句 + day2026-09-12.html 不存在 → 今日首次推送，安全执行（无重复 mastery 自增）
+- **学习总结**：streak=14 天（09-12 回溯至 08-30 连续）；累计 distinct review 日 18；learned 102/1000；今日新学 2、复习 3；当前激活池 150（总语料 1000）
