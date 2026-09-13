@@ -203,3 +203,21 @@
 - **服务**：端口 3279 回写服务 **启动前处于 DOWN 状态**（curl exit 7）→ 本次以托管后台任务（task Nq0p14）重启 serve.py，验证 /api/status ok、/api/mastery 回写可用、day 页经服务 HTTP 302 可达
 - **幂等守卫**：执行前校验 master.json 无 lastReviewed==2026-09-12 句 + day2026-09-12.html 不存在 → 今日首次推送，安全执行（无重复 mastery 自增）
 - **学习总结**：streak=14 天（09-12 回溯至 08-30 连续）；累计 distinct review 日 18；learned 102/1000；今日新学 2、复习 3；当前激活池 150（总语料 1000）
+
+## 最近执行：2026-09-13
+- **dayIndex = 32**（today 2026-09-13 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 32 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=61 ≠ 32；expansionsDone=1，还差 28 天到下次扩展日）
+- **选中句**：[20, 38, 55, 61, 78]（review 池 random.Random(32).sample(1..150,5)）
+  - s20 Please drop me off at the train station.（交通/打车, travel, mastery 1→2 rc 2）
+  - s38 Do you accept credit cards?（购物/支付, travel, mastery 2→3 rc 3）
+  - s55 Have a nice day!（礼貌/祝福, daily, mastery 1→2 rc 2）
+  - s61 What's your name again?（寒暄/问名, daily, mastery 1→2 rc 2）
+  - s78 Thank you for inviting me.（礼貌/道谢, daily, mastery 2→3 rc 3）
+- **增强内容**：5 句 enh 均 COMPLETE（fullIpa/variants(3)/scenes(3)/grammar/pron 全非空）
+- **音频**：s20/s38/s55/s61/s78.mp3 均存在，无需新生成
+- **写回 master.json**：5 句 lastReviewed=2026-09-13、reviewCount 各 +1、mastery 各 +1、introduced 保持 true（today_new=0）
+- **生成页**：run_daily.py 覆盖旧 gen_future 预览页（原 Aug 24）→ day2026-09-13.html（23.6KB，mtime 09:04）✓；gen_master_html.py 重生成 master.html（1000 句，2.5MB，mtime 09:05）✓
+- **服务**：端口 3279 回写服务 **启动前处于 DOWN 状态**（curl exit 7）→ 本次以托管后台任务（task TJA2vz）重启 serve.py，验证 /api/status ok、回写可用
+- **幂等守卫**：执行前校验 master.json 无 lastReviewed==2026-09-13 句 + day2026-09-13.html 为旧 gen_future 预览页(Aug 24) → 今日首次推送，安全执行（无重复 mastery 自增）
+- **学习总结**：streak=15 天（09-13 回溯至 08-30 连续）；累计 distinct review 日 19；learned 102/1000；今日新学 0、复习 5；当前激活池 150（总语料 1000）
