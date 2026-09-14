@@ -1,5 +1,23 @@
 # 自动化执行记录：每日英语口语推送（词力词汇教练）
 
+## 最近执行：2026-09-14
+- **dayIndex = 33**（today 2026-09-14 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 33 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=61 ≠ 33；expansionsDone=1，还差 27 天到下次扩展日）
+- **选中句**：[43, 60, 71, 123, 147]（review 池 random.Random(33).sample(1..150,5)；s123/s147 为激活区 101-150 内首次被抽中→新学）
+  - s43 What time does the museum open?（观光/时间, travel, mastery 3→3 rc 3）
+  - s60 Long time no see!（寒暄/重逢, daily, mastery 2→2 rc 2）
+  - s71 I'm stuck in traffic, so I might be a few minutes late.（闲聊/交通, daily, mastery 3→3 rc 3）
+  - s123 I'd like to report a lost suitcase, please.（机场/行李, travel, **新学** introducedDay=33 mastery=1 rc=1）
+  - s147 Which subway line goes to the museum?（交通/地铁, travel, **新学** introducedDay=33 mastery=1 rc=1）
+- **增强内容**：5 句 enh 均 COMPLETE（fullIpa/variants(3)/scenes(3)/grammar/pron 全非空，预置语料自带）
+- **音频**：s43/s60/s71 已存在、s123/s147 由 gen_one.py+edge-tts 生成成功；5 句 mp3 全部 OK；无 AUDIO_FAIL
+- **写回 master.json**：5 句 lastReviewed=2026-09-14、introduced 保持/翻转 true（s123/s147 新）；reviewCount/mastery 按规则+1
+- **生成页**：run_daily.py → day2026-09-14.html（23.6KB，0 转义残留）✓；gen_master_html.py 重生成 master.html（1000 句，2.5MB）✓
+- **服务**：端口 3279 回写服务 **启动前处于 DOWN 状态**（curl exit 7）→ 本次以托管后台任务（task Alempy）重启 serve.py，验证 /api/status ok、回写可用
+- **幂等守卫**：执行前校验 master.json 无 lastReviewed==2026-09-14 句 + day2026-09-14.html 不存在 → 今日首次推送，安全执行（无重复 mastery 自增）
+- **学习总结**：streak=16 天（09-14 回溯至 08-30 连续）；累计 distinct review 日 20；learned 104/1000；今日新学 2、复习 3；当前激活池 150（总语料 1000）
+
 ## 最近执行：2026-09-09
 - **dayIndex = 28**（today 2026-09-09 − startDate 2026-08-13 + 1）
 - **模式**：review（dayIndex 28 > introDays 20，随机复习，非新学）
