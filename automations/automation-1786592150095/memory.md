@@ -18,6 +18,24 @@
 - **幂等守卫**：执行前校验 master.json 无 lastReviewed==2026-09-14 句 + day2026-09-14.html 不存在 → 今日首次推送，安全执行（无重复 mastery 自增）
 - **学习总结**：streak=16 天（09-14 回溯至 08-30 连续）；累计 distinct review 日 20；learned 104/1000；今日新学 2、复习 3；当前激活池 150（总语料 1000）
 
+## 最近执行：2026-09-15
+- **dayIndex = 34**（today 2026-09-15 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 34 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=61 ≠ 34；expansionsDone=1，还差 27 天到下次扩展日）
+- **选中句**：[8, 59, 92, 136, 150]（review 池 random.Random(34).sample(1..150,5)；s136/s150 为激活区 101-150 内首次被抽中→新学）
+  - s8 Could you recommend a good local restaurant that's not too expensive and within walking distance?（餐厅/推荐, travel, mastery 3→3 rc 3）
+  - s59 How are you doing today?（寒暄/问候, daily, mastery 2→2 rc 2）
+  - s92 Just to be clear...（沟通/澄清, daily, mastery 2→2 rc 2）
+  - s136 Has boarding started for gate twenty-two?（机场/登机, travel, **新学** introducedDay=34 mastery=1 rc=1）
+  - s150 Does this train stop at every station?（交通/火车, travel, **新学** introducedDay=34 mastery=1 rc=1）
+- **增强内容**：5 句 enh 均 COMPLETE（fullIpa/variants(3)/scenes(3)/grammar/pron 全非空，预置语料自带）
+- **音频**：s8/s59/s92 已存在；s136/s150 由 gen_one.py+edge-tts 生成成功；5 句 mp3 全部 OK；无 AUDIO_FAIL
+- **写回 master.json**：5 句 lastReviewed=2026-09-15、introduced 保持/翻转 true（s136/s150 新）；reviewCount/mastery 按规则+1
+- **生成页**：run_daily.py → day2026-09-15.html（24.0KB，0 转义残留，字节级校验通过）✓；gen_master_html.py 重生成 master.html（1000 句，2.5MB）✓
+- **服务**：端口 3279 回写服务 **启动前处于 DOWN 状态**（curl exit 7）→ 本次以托管后台任务（task pytr5c）重启 serve.py，验证 /api/status ok、/api/mastery 回写可用、day 页经服务 HTTP 302 可达
+- **幂等守卫**：执行前校验 master.json 无 lastReviewed==2026-09-15 句 + day2026-09-15.html 不存在 → 今日首次推送，安全执行（无重复 mastery 自增）
+- **学习总结**：streak=17 天（09-15 回溯至 08-30 连续）；累计 distinct review 日 21；learned 106/1000；今日新学 2、复习 3；当前激活池 150（总语料 1000）
+
 ## 最近执行：2026-09-09
 - **dayIndex = 28**（today 2026-09-09 − startDate 2026-08-13 + 1）
 - **模式**：review（dayIndex 28 > introDays 20，随机复习，非新学）
