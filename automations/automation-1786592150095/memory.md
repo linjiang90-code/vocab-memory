@@ -257,3 +257,22 @@
 - **服务**：端口 3279 回写服务 **启动前处于 DOWN 状态**（curl exit 7）→ 本次以托管后台任务（task TJA2vz）重启 serve.py，验证 /api/status ok、回写可用
 - **幂等守卫**：执行前校验 master.json 无 lastReviewed==2026-09-13 句 + day2026-09-13.html 为旧 gen_future 预览页(Aug 24) → 今日首次推送，安全执行（无重复 mastery 自增）
 - **学习总结**：streak=15 天（09-13 回溯至 08-30 连续）；累计 distinct review 日 19；learned 102/1000；今日新学 0、复习 5；当前激活池 150（总语料 1000）
+
+## 最近执行：2026-09-16
+- **dayIndex = 35**（today 2026-09-16 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 35 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=61 ≠ 35；expansionsDone=1，还差 26 天到下次扩展日）
+- **选中句**：[34, 40, 86, 88, 141]（review 池 random.Random(35).sample(1..150,5)；s141 为激活区 101-150 内首次被抽中→新学）
+  - s34 Is the tip included?（餐厅/结账, travel, 复习 mastery 1→2 rc 2）
+  - s40 Where are the changing rooms?（购物/试穿, travel, 复习 mastery 1→2 rc 2）
+  - s86 I couldn't agree more.（回应/赞同, daily, 复习 mastery 1→2 rc 2）
+  - s88 I'll get back to you as soon as I confirm the details with my manager.（回应/回复, daily, 复习 mastery 1→2 rc 2）
+  - s141 Do you take credit cards or cash only?（交通/打车, travel, **新学** introducedDay=35 mastery=1 rc=1）
+- **增强内容**：5 句 enh 均 COMPLETE（fullIpa/variants(3)/scenes(3)/grammar/pron 全非空，预置语料自带）
+- **音频**：s34/s40/s86/s88 已存在；s141 由 gen_one.py+edge-tts 生成成功（15840 字节）；5 句 mp3 全部 OK；无 AUDIO_FAIL
+- **写回 master.json**：5 句 lastReviewed=2026-09-16、introduced 保持/翻转 true（s141 新）；reviewCount/mastery 按规则+1
+- **生成页**：run_daily.py → day2026-09-16.html（23.9KB，0 转义残留，字节级校验通过）✓；gen_master_html.py 重生成 master.html（1000 句，2.5MB）✓；gen_views_html.py 重建 review=107 learned / calendar
+- **服务**：端口 3279 回写服务 **启动前处于 DOWN 状态**（curl exit 7）→ 本次以托管后台任务（task wffURv）重启 serve.py，验证 /api/status ok、/api/mastery 回写可用（action 字段，HTTP 200）、day 页经服务 HTTP 302 可达
+- **数据修复**：测试回写时误用 action 字段将 s34 mastery 改为 1，已直接从 master.json 还原为 2 并重跑 gen_master_html.py + gen_views_html.py，最终 5 句掌握度全部正确
+- **幂等守卫**：执行前校验 master.json 无 lastReviewed==2026-09-16 句 + day2026-09-16.html 不存在 → 今日首次推送，安全执行（无重复 mastery 自增）
+- **学习总结**：streak=18 天（09-16 回溯至 08-30 连续）；累计 distinct review 日 22；learned 107/1000；今日新学 1、复习 4；当前激活池 150（总语料 1000）
