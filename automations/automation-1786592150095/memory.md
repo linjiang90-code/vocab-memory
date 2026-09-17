@@ -258,6 +258,24 @@
 - **幂等守卫**：执行前校验 master.json 无 lastReviewed==2026-09-13 句 + day2026-09-13.html 为旧 gen_future 预览页(Aug 24) → 今日首次推送，安全执行（无重复 mastery 自增）
 - **学习总结**：streak=15 天（09-13 回溯至 08-30 连续）；累计 distinct review 日 19；learned 102/1000；今日新学 0、复习 5；当前激活池 150（总语料 1000）
 
+## 最近执行：2026-09-17
+- **dayIndex = 36**（today 2026-09-17 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 36 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=61 ≠ 36；expansionsDone=1，还差 25 天到下次扩展日）
+- **选中句**：[6, 15, 21, 73, 85]（review 池 random.Random(36).sample(1..150,5)；全为已 introduced 句，今日 0 新学）
+  - s6 What do you usually do on weekends?（闲聊/周末, daily, 复习 mastery 2→3 rc 3）
+  - s15 Where is the baggage claim?（机场/行李, travel, 复习 mastery 1→2 rc 2）
+  - s21 How far is it from here?（问路/距离, travel, 复习 mastery 1→2 rc 2）
+  - s73 I had a long day at work.（闲聊/工作, daily, 复习 mastery 1→2 rc 2）
+  - s85 That sounds great!（回应/赞同, daily, 复习 mastery 1→2 rc 2）
+- **增强内容**：5 句 enh 均 COMPLETE（fullIpa/variants(3)/scenes(3)/grammar/pron 全非空，预置语料自带）
+- **音频**：s6/s15/s21/s73/s85.mp3 均存在，无需新生成；5 句 mp3 全部 OK；无 AUDIO_FAIL
+- **写回 master.json**：5 句 lastReviewed=2026-09-17、reviewCount 各 +1、mastery 各 +1、introduced 保持 true（today_new=0）
+- **生成页**：run_daily.py → day2026-09-17.html（23.7KB，0 转义残留，字节级校验通过）✓；gen_master_html.py 重生成 master.html（1000 句，2.5MB，mtime 09:12:40）✓；0 转义残留
+- **服务**：端口 3279 回写服务 **启动前处于 DOWN 状态**（curl exit 7）→ 本次以托管后台任务（task zEcD0A）重启 serve.py（注意：首启用 Windows 路径被 bash 转义成空格报错，改用 Git Bash 正斜杠路径成功），验证 /api/status ok、回写可用、day 页经服务可达
+- **幂等守卫**：执行前校验 master.json 无 lastReviewed==2026-09-17 句 + day2026-09-17.html 不存在 → 今日首次推送，安全执行（无重复 mastery 自增）
+- **学习总结**：streak=19 天（09-17 回溯至 08-30 连续）；累计 distinct review 日 23；learned 107/1000；今日新学 0、复习 5；当前激活池 150（总语料 1000）
+
 ## 最近执行：2026-09-16
 - **dayIndex = 35**（today 2026-09-16 − startDate 2026-08-13 + 1）
 - **模式**：review（dayIndex 35 > introDays 20，随机复习，非新学）
