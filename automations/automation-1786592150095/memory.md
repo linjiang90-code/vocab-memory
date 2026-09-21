@@ -295,6 +295,25 @@
 - **幂等守卫**：执行前校验 master.json 无 lastReviewed==2026-09-16 句 + day2026-09-16.html 不存在 → 今日首次推送，安全执行（无重复 mastery 自增）
 - **学习总结**：streak=18 天（09-16 回溯至 08-30 连续）；累计 distinct review 日 22；learned 107/1000；今日新学 1、复习 4；当前激活池 150（总语料 1000）
 
+## 最近执行：2026-09-21
+- **dayIndex = 40**（today 2026-09-21 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 40 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=61 ≠ 40；expansionsDone=1，还差 21 天到下次扩展日）
+- **选中句**：[9, 63, 118, 135, 149]（review 池 random.Random(40).sample(1..150,5)；s118/s135/s149 为激活区 101-150 内首次被抽中→新学）
+  - s9 I was wondering if you'd like to grab a coffee with me sometime this week.（邀约/喝咖啡, daily, 复习 mastery 3→3 rc 3）
+  - s63 Nice talking to you.（寒暄/道别, daily, 复习 mastery 2→2 rc 2）
+  - s118 Where can I claim my checked luggage?（机场/行李, travel, **新学** introducedDay=40 mastery=1 rc=1）
+  - s135 Could you tell me where the departure gate is?（机场/登机, travel, **新学** introducedDay=40 mastery=1 rc=1）
+  - s149 Is a day pass worth it for getting around?（交通/购票, travel, **新学** introducedDay=40 mastery=1 rc=1）
+- **增强内容**：5 句 enh 均 COMPLETE（fullIpa/variants(3)/scenes(3)/grammar/pron 全非空，预置语料自带）
+- **音频**：s9/s63 已存在；s118/s135/s149 由 gen_one.py+edge-tts 生成成功；5 句 mp3 全部 OK；无 AUDIO_FAIL
+- **写回 master.json**：5 句 lastReviewed=2026-09-21、introduced 保持/翻转 true（s118/s135/s149 新）；reviewCount/mastery 按规则+1
+- **生成页**：run_daily.py → day2026-09-21.html（23.9KB，0 转义残留，字节级校验通过）✓；gen_master_html.py 重生成 master.html（1000 句，2.5MB）✓
+- **服务**：端口 3279 回写服务 **启动前处于 DOWN 状态**（curl exit 7）→ 本次以托管后台任务（task 7Ykmxp）重启 serve.py，验证 /api/status ok、回写可用、day 页经服务 HTTP 302 可达
+- **幂等守卫**：执行前校验 master.json 无 lastReviewed==2026-09-21 句 + day2026-09-21.html 不存在 → 今日首次推送，安全执行（无重复 mastery 自增）
+- **异常观察**：09-19、09-20 自动化未触发（上次成功运行 09-18），连续学习 streak 由 20 断档归 1（今日新计 1 天）；累计 distinct review 日 25（仍累加，未丢）
+- **学习总结**：streak=1 天（09-19/09-20 漏跑断档，今日重新计起）；累计 distinct review 日 25；learned 112/1000；今日新学 3、复习 2；当前激活池 150（总语料 1000）
+
 ## 最近执行：2026-09-18
 - **dayIndex = 37**（today 2026-09-18 − startDate 2026-08-13 + 1）
 - **模式**：review（dayIndex 37 > introDays 20，随机复习，非新学）
