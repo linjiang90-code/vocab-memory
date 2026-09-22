@@ -12,8 +12,8 @@
 ## 语料与选句机制（2026-09-10 起）
 - **语料 1000 句**（ids 1-1000，原始 100 句 + 900 新句，0 重复；新句来源 sentences_pool_1..9.py，由 expand_corpus.py 幂等合并）。
 - **每日 5 句随机**：`random.Random(dayIndex)` + `sample(可用ids, 5)`，同日幂等、跨日随机；run_daily / push_day / gen_future 三处公式必须完全一致（改一处必须同步另两处）。
-- **每 30 天解锁 +50**：`meta.activeCount`（当前 100）在 `nextExpansionDay`（31，即 2026-09-12）起每次 +50 封顶 1000，while 循环可补漏跑。新句被随机抽中即视为引入（introduced 置位）。
-- 900 新句暂无 enh 详细标注（整句音标/变体/场景/语法/发音），master.html 如实显示「暂未撰写」；后续可分批补写。
+- **每 30 天解锁 +50**：`meta.activeCount` 在 `nextExpansionDay`（已从 31 走到 **61**，即 2026-10-12）起每次 +50 封顶 1000，while 循环可补漏跑。**当前 activeCount=150、expansionsDone=1**。新句被随机抽中即视为引入（introduced 置位）。
+- 语料已**全量预置**（ids 1-1000）且 **1000 句均带完整 enh**（fullIpa/variants/scenes/grammar/pron）——激活区新句被抽中时无需手写增强，不存在「暂未撰写」空 enh。run_daily.py 内的 ENH 字典仅覆盖 id 6–10，是历史兜底。
 - 分类体系沿用「主题/子类」中文标签（travel：机场/酒店/餐厅/购物/观光/应急…；daily：寒暄/邀约/情绪/表达/俗语…）。
 
 ## 运行/部署
@@ -26,7 +26,8 @@
 
 ## 生成器双轨 + 模板铁律（关键）
 - 两个日页生成器：push_day.py(手动,完整版) + run_daily.py(自动化,完整版，须与 push_day 一致)。改日页模板必须同步两者。
-- gen_future.py(预生成/预习)：正则从 run_daily.py 提取 PAGE 模板字符串（非执行）→ 与每日自动化自动同步；生成未来 day<date>.html+侧车，不碰 master.json。参数 `gen_future.py 2026-08-22 1` 可单补某日。
+- **收尾动作也必须双轨对齐（2026-09-22 修）**：push_day.py 收尾会 ①写 `day<date>.json` 侧车 ②去重更新 `days.json` ③重生成 master.html ④重生成 gen_views_html.py。**run_daily.py 原缺 ① ② ④**（只重生成 master.html），导致 09-16 起日页有页无侧车 → calendar.html 那几天点不动、也不进「最近练习」。现已给 run_daily.py 补齐四步。**新增/修改日页收尾逻辑时，两端必须一起改。**
+- gen_future.py(预生成/预习)：正则从 run_daily.py 提取 PAGE 模板字符串（非执行）→ 与每日自动化自动同步；生成未来 day<date>.html+侧车，不碰 master.json。参数 `gen_future.py 2026-08-22 1` 可单补某日。它另有自愈块（源码尾部）：为「有日页无侧车」的日期反解 ids 补侧车，并把 ≤今天且未登记的日期写进 days.json → **日历出现死格/最近练习缺日时，先跑 gen_future.py 自愈，再跑 gen_views_html.py**。
 - **模板必须用真实 UTF-8 字符，严禁 \uXXXX / \U00XXXXXXXX 转义**：gen_future 取源码字面量，未解码转义会原样写进 HTML 变乱码。run_daily.py 执行时解释器会解码(自生成正常)，但文本级提取会中招。往模板加中文/emoji 直接写汉字和符号。
 - 排查模板转义残留：Python `open(f,'rb')` + `re.compile(rb'\\\u[0-9a-fA-F]{4}|\\\U00[0-9a-fA-F]{8}')` 字节级扫描（Read/Grep 会自动解码隐藏问题）。
 

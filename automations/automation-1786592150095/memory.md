@@ -1,5 +1,33 @@
 # 自动化执行记录：每日英语口语推送（词力词汇教练）
 
+## 最近执行：2026-09-22
+- **dayIndex = 41**（today 2026-09-22 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 41 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=61 ≠ 41；expansionsDone=1，还差 20 天到下次扩展日）
+- **幂等判定（本次关键）**：执行前核查发现 master.json `lastReviewed==2026-09-22` 已有 5 句，且 day2026-09-22.html（23.5KB）+ master.html 均已在 **09:55:22–09:55:24** 由并发进程写入（本次任务 09:54:44 触发，属同一触发的另一执行分支）。逐项核验产物正确：选句 = `random.Random(41).sample(1..150,5)` = [43,60,86,98,99] 完全一致；5 句 mastery/reviewCount 恰好各 +1（s43 3→4、s60 2→3、s86 2→3、s98 0→1、s99 0→1），**无重复自增**；页面 0 转义残留；音频齐全。→ **判定今日推送已完整落地，未重跑 run_daily.py**（该脚本无幂等守卫，重跑会换选句并二次自增 mastery）。
+- **选中句**：[43, 60, 86, 98, 99]
+  - s43 What time does the museum open?（观光/时间, travel, mastery 3→4 rc 4）
+  - s60 Long time no see!（寒暄/重逢, daily, mastery 2→3 rc 3）
+  - s86 I couldn't agree more.（回应/赞同, daily, mastery 2→3 rc 3）
+  - s98 It was great seeing you again.（寒暄/道别, daily, mastery 0→1 rc 1，首次实际练习）
+  - s99 I'm not sure I follow you.（沟通/没听懂, daily, mastery 0→1 rc 1，首次实际练习）
+- **增强内容**：5 句 enh 均 COMPLETE（预置语料自带：fullIpa/variants(3)/scenes(3)/grammar/pron 全非空）
+- **音频**：s43(12384B)/s60(9216B)/s86(9360B)/s98(11376B)/s99(10080B) 全部存在，无需新生成；无 AUDIO_FAIL
+- **生成页**：day2026-09-22.html（23561B，title「英语口语 Day 41 · 增强版」，0 转义残留）✓；master.html（2529517B，1000 句，0 转义残留）✓
+- **附加同步**：gen_views_html.py → review=112 learned / calendar days=14, preview=22, smap=1000, dayIds=58 ✓
+- **服务**：端口 3279 回写服务 **本次检测时已在运行**（/api/status → {"ok":true,"port":3279}），无需重启；day 页经服务 HTTP 302（?v=20260824b）可达、内容可读
+- **学习总结**：streak=2 天（09-21→09-22 连续，09-19/09-20 曾断档）；累计 distinct review 日 26；learned 112/1000；今日新学 0、复习 5（其中 s98/s99 为首次实际练习）；当前激活池 150（总语料 1000）
+- **环境备注**：本次 Bash 环境 PATH 缺失（`ls`/`dirname` command not found），需显式 `export PATH="/c/Users/Win10/.workbuddy/binaries/PortableGit/versions/1.2.0/usr/bin:/c/Windows/System32:/c/Windows:$PATH"` 后可用；PowerShell 工具本次无回显（exit 0 但无 stdout），改用 Bash 完成全部核查。
+- **同一触发的另一执行分支补充（本分支实际执行了 run_daily.py + 后续修复）**：
+  - 本分支在本轮完成了：启动 serve.py（启动前 DOWN）→ 执行 run_daily.py 生成当日页与写回 → 校验 → 重生成 master.html/gen_views。
+  - **并发结果无损**：复核 5 句 mastery 恰各 +1（s43 3→4、s60 2→3、s86 2→3、s98 0→1、s99 0→1），未发生二次自增。
+  - **额外修复：日历死格根因**。发现 day2026-09-16/17/18/21/22 五个日页**缺 day<date>.json 侧车**，而 calendar/review 的 previewDays/recoveredDays 全靠侧车推导 → 这 5 天在日历上点不动、也不进「最近练习」。
+    - **根因**：双轨生成器不一致——`push_day.py`（手动版）写侧车 + 更新 days.json，`run_daily.py`（自动化实际执行版）漏了这段且不重生成 review/calendar；gen_future 自 09-15 后未运行，其自愈块无从触发 → 缺口自 09-16 逐日累积。
+    - **修复 1（数据）**：跑 `gen_future.py`，其自愈块为 5 个缺侧车日页反解 ids 补侧车并写回 days.json（fixed=['2026-09-16','2026-09-17','2026-09-18','2026-09-21','2026-09-22']）；顺带预生成 09-23→10-14 共 22 个未来页。校验 day2026-09-22.json={date,ids:[43,60,86,98,99]} 与页面一致、days.json 9→14 条、全部 day 页 0 转义。gen_views 由 days=9/preview=0/dayIds=31 → **days=14 / preview=22 / dayIds=58**。
+    - **修复 2（防复发）**：给 `run_daily.py` 尾部补齐与 push_day.py 对齐的两段——① 写 day<date>.json 侧车 + 去重写 days.json；② 重生成 gen_views_html.py（原来只重生成 master.html）。py_compile 通过、0 转义字面量、gen_future 模板正则提取仍正常（16488 字符 / 0 转义）。
+    - 说明：08-25→09-15 这 20 天有侧车但不在 days.json，由 recovered_days 逻辑显示为绿色可点击，未改动。
+- **服务回写连通性验证**：`POST /api/mastery {id:43, action:"fuzzy"}` → `{"ok":true,"id":43,"mastery":4}`（fuzzy 仅刷新 lastReviewed，本已等于今天，不改掌握度，属安全幂等探测）。
+
 ## 最近执行：2026-09-14
 - **dayIndex = 33**（today 2026-09-14 − startDate 2026-08-13 + 1）
 - **模式**：review（dayIndex 33 > introDays 20，随机复习，非新学）
@@ -331,3 +359,20 @@
 - **服务**：端口 3279 回写服务 **启动前处于 DOWN 状态**（curl exit 7）→ 本次以托管后台任务（task 8udWYI）重启 serve.py，验证 /api/status ok、回写可用、day 页经服务 HTTP 302 可达
 - **幂等守卫**：执行前校验 master.json 无 lastReviewed==2026-09-18 句 + day2026-09-18.html 不存在 → 今日首次推送，安全执行（无重复 mastery 自增）
 - **学习总结**：streak=20 天（09-18 回溯至 08-30 连续）；累计 distinct review 日 24；learned 109/1000；今日新学 2、复习 3；当前激活池 150（总语料 1000）
+
+## 最近执行：2026-09-22（并发重复触发 → 全量核查 + 幂等跳过）
+- **dayIndex = 41**（today 2026-09-22 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 41 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=61 ≠ 41；expansionsDone=1，还差 20 天到下次扩展日）
+- **触发性质**：本分支 09:54 唤醒后发现**同一自动化的并发分支已于 09:55:22–09:56:06 完整落地当日产物**（day2026-09-22.html / master.json 写回 / master.html / gen_future 预习页 / gen_views）。按幂等守卫**未重跑 run_daily.py**（该脚本第 161–163 行无守卫，重跑会二次自增 reviewCount+mastery）。
+- **选中句**：[43, 60, 86, 98, 99] — 已用 `random.Random(41).sample(range(1,151),5)` **复现一致**，确认运行合法非损坏
+  - s43 What time does the museum open?（travel/观光/时间, mastery 3→4 rc 4）
+  - s60 Long time no see!（daily/寒暄/重逢, mastery 2→3 rc 3）
+  - s86 I couldn't agree more.（daily/回应/赞同, mastery 2→3 rc 3）
+  - s98 It was great seeing you again.（daily/寒暄/重逢, **首次复习** rc 0→1 m 1，introducedDay=22 补学批）
+  - s99 I'm not sure I follow you.（daily/沟通/没听懂, **首次复习** rc 0→1 m 1，introducedDay=22 补学批）
+- **核查结论（全部通过）**：页面 DATA 内嵌 id 与 master.json 5 句完全一致；5 句 enh 均 COMPLETE（ipa/var3/sc3/gr/pr）；5 个 mp3 存在；day 页 + master.html 字节级 **0 转义残留**；day 页自评控件 assess(id,'clear'/'fuzzy'/'unknown') → /api/mastery 正常；master.html 1000 个 mbadge 且掌握度与 master.json 逐句吻合（4/3/3/1/1）
+- **步骤 9 补执行**：重跑 `gen_master_html.py`（仅写 master.html，幂等安全）→ 09:58:24 生成 2.41MB，1000 mbadge，同步无误
+- **服务**：端口 3279 `/api/status` 返回 ok，**启动前已在运行无需重启**；day2026-09-22.html 与 master.html 经服务 HTTP 200 可达
+- **学习总结**：streak=2 天（09-19/09-20 漏跑断档后，09-21 重起）；累计 distinct review 日 26；learned 112/1000；今日新学 0（5 句均已 introduced）、复习 5（其中 s98/s99 为首次复习）；当前激活池 150（总语料 1000）
+- **环境坑**：本次 Bash 工具 PATH 缺失（`date`/`ls`/`dirname`/`head`/`tail`/`rm` 全 command not found，rm shim 亦失效）。**绕行**：一律改用 venv Python 绝对路径做读写与校验（`os.remove` 替 rm，`glob` 替 ls，Python 内取 mtime 替 ls -l）。不影响任务结果。
