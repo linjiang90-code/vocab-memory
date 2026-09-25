@@ -1,5 +1,23 @@
 # 自动化执行记录：每日英语口语推送（词力词汇教练）
 
+## 最近执行：2026-09-25
+- **dayIndex = 44**（today 2026-09-25 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 44 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=61 ≠ 44；expansionsDone=1，还差 17 天到下次扩展日 2026-10-12）
+- **服务**：端口 3279 `/api/status` 返回 ok，**启动前已在运行无需重启**；day 页经服务 HTTP 302（?v=20260824b）可达、内容可读
+- **幂等守卫**：执行前核查 master.json 无 lastReviewed==2026-09-25 句 + day2026-09-25.html 仅为 09-22 gen_future 预览页（mtime 09-22）→ 今日首次实际推送，安全执行（无重复 mastery 自增）
+- **选中句**：[30, 46, 105, 134, 139]（review 池 random.Random(44).sample(1..150,5)，与预览侧车一致）
+  - s30 What's the Wi-Fi password?（travel/酒店网络, short, 复习 mastery 1→2 rc 1→2）
+  - s46 Where is the nearest restroom?（travel/应急, short, 复习 mastery 2→3 rc 2→3）
+  - s105 What's the baggage allowance for economy class?（travel/机场值机, short, **新学** introducedDay=44 mastery=1 rc=1）
+  - s134 Do I have anything to declare? Nothing to declare.（travel/出入境通关, long, **新学** introducedDay=44 mastery=1 rc=1）
+  - s139 Could you call a taxi for me, please?（travel/交通打车, short, **新学** introducedDay=44 mastery=1 rc=1）
+- **增强内容**：5 句 enh 均 COMPLETE（预置语料自带 fullIpa/variants(3)/scenes(3)/grammar/pron 全非空）
+- **音频**：s30(11376B)/s46(10800B)/s105(18720B)/s134(20016B)/s139(14112B) 全部已存在，无需新生成；无 AUDIO_FAIL
+- **生成页**：run_daily.py → day2026-09-25.html（23393B，title「英语口语 Day 44 · 增强版」）+ 侧车 day2026-09-25.json（无 preview 标记，ids 与选中一致）+ days.json 登记（count 15）；字节级 **0 转义残留**；经服务 HTTP 200 可读、5 句英文均内嵌正确
+- **自动重生成**：gen_master_html.py → master.html（2529523B，1000 句，0 转义）；gen_views_html.py → review.html/calendar.html（mtime 09:14）
+- **数据观察**：09-23/09-24 自动化未触发（gap），故连续 streak 由 09-22 断档归 1（今日计 1 天）；累计 distinct review 日 27；learned 112→**115/1000**；今日新学 3、复习 2；当前激活池 150（总语料 1000）
+
 ## 最近执行：2026-09-22
 - **dayIndex = 41**（today 2026-09-22 − startDate 2026-08-13 + 1）
 - **模式**：review（dayIndex 41 > introDays 20，随机复习，非新学）
