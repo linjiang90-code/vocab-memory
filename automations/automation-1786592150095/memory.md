@@ -1,5 +1,23 @@
 # 自动化执行记录：每日英语口语推送（词力词汇教练）
 
+## 最近执行：2026-09-26
+- **dayIndex = 45**（today 2026-09-26 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 45 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=61 ≠ 45；expansionsDone=1，还差 16 天到下次扩展日 2026-10-12）
+- **幂等守卫**：执行前核查 master.json 无 lastReviewed==2026-09-26 句 + day2026-09-26.html 仅为 09-22 gen_future 预览页（mtime 09-22）→ 今日首次实际推送，安全执行（无重复 mastery 自增）
+- **选中句**：[21, 66, 70, 107, 125]（review 池 random.Random(45).sample(1..150,5)；s107/s125 为激活区 101-150 内首次被抽中→新学）
+  - s21 How far is it from here?（travel/问路距离, short, 复习 mastery 2→3 rc 2→3）
+  - s66 Are you free this weekend?（daily/周末邀约, short, 复习 mastery 1→2 rc 1→2）
+  - s70 It's raining cats and dogs.（daily/天气闲聊, short, 复习 mastery 2→3 rc 2→3）
+  - s107 Can I pay for the extra bag at the counter?（travel/机场行李, short, **新学** introducedDay=45 mastery=1 rc=1）
+  - s125 Passport and boarding pass, please.（travel/机场边检, short, **新学** introducedDay=45 mastery=1 rc=1）
+- **增强内容**：5 句 enh 均 COMPLETE（预置语料自带 fullIpa/variants/scenes/grammar/pron 全非空）
+- **音频**：s21(9792B)/s66(9360B)/s70(12384B)/s107(15552B)/s125(17568B) 全部已存在（s107/s125 扩展期已生成），无需新生成；无 AUDIO_FAIL
+- **生成页**：run_daily.py → day2026-09-26.html（23544B，title「英语口语 Day 45 · 增强版」）+ 侧车 day2026-09-26.json（ids 与选中一致）+ days.json 登记（count 16）；字节级 **0 转义残留**；5 句英文均内嵌正确
+- **自动重生成**：gen_master_html.py → master.html（2529527B，1000 句，0 转义，1001 mbadge）；gen_views_html.py → review.html/calendar.html（mtime 09:11:32）
+- **服务**：端口 3279 `/api/status` 返回 ok，**启动前已在运行无需重启**；day 页经服务可达、内容可读
+- **学习总结**：streak=2 天（09-25→09-26 连续）；累计 distinct review 日 28；learned 115→**117/1000**；今日新学 2、复习 3；当前激活池 150（总语料 1000）
+
 ## 最近执行：2026-09-25
 - **dayIndex = 44**（today 2026-09-25 − startDate 2026-08-13 + 1）
 - **模式**：review（dayIndex 44 > introDays 20，随机复习，非新学）
