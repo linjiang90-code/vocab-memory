@@ -1,5 +1,23 @@
 # 自动化执行记录：每日英语口语推送（词力词汇教练）
 
+## 最近执行：2026-09-27
+- **dayIndex = 46**（today 2026-09-27 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 46 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=61 ≠ 46；expansionsDone=1，还差 15 天到下次扩展日 2026-10-12）
+- **幂等守卫**：执行前核查 master.json 无 lastReviewed==2026-09-27 句 + day2026-09-27.html 实为 09-22 gen_future 预览页（侧车 preview=true、无实际写回）→ 今日首次实际推送，安全执行（无重复 mastery 自增）
+- **选中句**：[11, 20, 59, 103, 133]（review 池 random.Random(46).sample(1..150,5)；s103/s133 为激活区 101-150 内首次被抽中→新学；与预览侧车完全一致）
+  - s11 Where can I buy a ticket to the city center?（交通/购票, travel, 复习 mastery 2→3 rc 2→3）
+  - s20 Please drop me off at the train station.（交通/打车, travel, 复习 mastery 2→3 rc 2→3）
+  - s59 How are you doing today?（寒暄/问候, daily, 复习 mastery 2→3 rc 2→3）
+  - s103 Could I get a window seat this time?（机场/选座, travel, **新学** introducedDay=46 mastery=1 rc=1）
+  - s133 Where should I go through customs?（机场/边检, travel, **新学** introducedDay=46 mastery=1 rc=1）
+- **增强内容**：5 句 enh 均 COMPLETE（fullIpa/variants(3)/scenes(3)/grammar/pron 全非空，预置语料自带）
+- **音频**：s11(14832B)/s20(15120B)/s59(9216B)/s103(12528B)/s133(12096B) 全部已存在，无需新生成；无 AUDIO_FAIL
+- **生成页**：run_daily.py → day2026-09-27.html（24.0KB，title「英语口语 Day 46 · 增强版」，已覆盖预览页、侧车无 preview 标记）+ 侧车 day2026-09-27.json（ids 与选中一致）+ days.json 登记（count 17）；字节级 **0 转义残留**；经服务 HTTP 302（?v=BUILD）可达
+- **自动重生成**：gen_master_html.py → master.html（2.53MB，1000 句，0 转义）；gen_views_html.py → review.html/calendar.html
+- **服务**：端口 3279 `/api/status` 返回 ok（{"ok":true,"port":3279}），**启动前已在运行无需重启**；day 页经服务可达、内容可读
+- **学习总结**：streak=3 天（09-25→09-26→09-27 连续）；累计 distinct review 日 29；learned 117→**119/1000**；今日新学 2、复习 3；当前激活池 150（总语料 1000）
+
 ## 最近执行：2026-09-26
 - **dayIndex = 45**（today 2026-09-26 − startDate 2026-08-13 + 1）
 - **模式**：review（dayIndex 45 > introDays 20，随机复习，非新学）
