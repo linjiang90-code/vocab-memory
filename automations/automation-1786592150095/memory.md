@@ -1,5 +1,23 @@
 # 自动化执行记录：每日英语口语推送（词力词汇教练）
 
+## 最近执行：2026-10-02
+- **dayIndex = 51**（today 2026-10-02 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 51 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=61 ≠ 51；expansionsDone=1，还差 10 天到下次扩展日 2026-10-12）
+- **幂等守卫**：执行前核查 master.json 无 lastReviewed==2026-10-02 句 + day2026-10-02.html 仅为 gen_future 预览页（侧车 preview=True）→ 今日首次实际推送，安全执行（无重复 mastery 自增）
+- **选中句**：[42, 60, 63, 129, 142]（review 池 random.Random(51).sample(1..150,5)；s129 为激活区 101-150 内首次被抽中→新学）
+  - s42 Is there a discount for students?（购物/优惠, travel, 复习 mastery 3→3 rc 3）
+  - s60 Long time no see!（寒暄/重逢, daily, 复习 mastery 4→4 rc 4）
+  - s63 Nice talking to you.（寒暄/道别, daily, 复习 mastery 4→4 rc 4）
+  - s129 What's the purpose of your visit?（出入境/通关, travel, **新学** introducedDay=51 mastery=1 rc=1）
+  - s142 Could you open the trunk for my luggage?（交通/打车, travel, 复习 mastery 2→2 rc 2）
+- **增强内容**：5 句 enh 均 COMPLETE（fullIpa/variants/scenes/grammar/pron 全非空，预置语料自带）
+- **音频**：s42(12384B)/s60(9216B)/s63(8352B)/s129(12096B)/s142(14256B) 全部已存在，无需新生成；无 AUDIO_FAIL
+- **生成页**：run_daily.py → day2026-10-02.html（preview 页已覆盖为正式页、侧车无 preview 标记、ids 与选中一致）+ days.json 登记（count 21）；字节级 **0 转义残留**；经服务 HTTP 302（?v=BUILD）可达
+- **自动重生成**：gen_master_html.py → master.html（1000 句，0 转义）
+- **服务**：端口 3279 `/api/status` 返回 ok（{"ok":true,"port":3279}），**启动前已在运行无需重启**；day 页经服务可达
+- **学习总结**：streak=2 天（09-30 漏推断档，10-01→10-02 连续）；累计 distinct review 日 33；learned 126→**127/1000**；今日新学 1、复习 4；当前激活池 150（总语料 1000）
+
 ## 最近执行：2026-10-01
 - **dayIndex = 50**（today 2026-10-01 − startDate 2026-08-13 + 1）
 - **模式**：review（dayIndex 50 > introDays 20，随机复习，非新学）
