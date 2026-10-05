@@ -503,3 +503,21 @@
 - **服务**：端口 3279 `/api/status` 返回 ok，**启动前已在运行无需重启**；day2026-09-22.html 与 master.html 经服务 HTTP 200 可达
 - **学习总结**：streak=2 天（09-19/09-20 漏跑断档后，09-21 重起）；累计 distinct review 日 26；learned 112/1000；今日新学 0（5 句均已 introduced）、复习 5（其中 s98/s99 为首次复习）；当前激活池 150（总语料 1000）
 - **环境坑**：本次 Bash 工具 PATH 缺失（`date`/`ls`/`dirname`/`head`/`tail`/`rm` 全 command not found，rm shim 亦失效）。**绕行**：一律改用 venv Python 绝对路径做读写与校验（`os.remove` 替 rm，`glob` 替 ls，Python 内取 mtime 替 ls -l）。不影响任务结果。
+
+## 最近执行：2026-10-05
+- **dayIndex = 54**（today 2026-10-05 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 54 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=61 ≠ 54；expansionsDone=1，还差 7 天到下次扩展日 2026-10-12）
+- **幂等守卫**：执行前核查 master.json 无 lastReviewed==2026-10-05 句 + day2026-10-05.html 仅为 gen_future 预览页（侧车 preview=True）→ 今日首次实际推送，安全执行（无重复 mastery 自增）
+- **选句**：[36, 77, 113, 124, 143]（random.Random(54).sample(1..150,5)，与预览侧车一致；全为已 introduced 句，今日 0 新学）
+  - s36 Can I try this on?（购物/试穿, travel, 复习 mastery 2→3 rc 2→3）
+  - s77 Congratulations on your promotion!（祝贺/职场, daily, 复习 mastery 3→4 rc 3→4）
+  - s113 Is one hour enough for the connection?（机场/转机, travel, 复习 mastery 2→3 rc 2→3）
+  - s124 Here's my claim tag for the missing bag.（机场/行李, travel, 复习 mastery 3→4 rc 3→4）
+  - s143 Please drop me off at the main entrance.（交通/打车, travel, 复习 mastery 2→3 rc 2→3）
+- **增强内容**：5 句 enh 均 COMPLETE（fullIpa/variants/scenes/grammar/pron 全非空，预置语料自带）
+- **音频**：s36(8064B)/s77(13968B)/s113(13248B)/s124(15264B)/s143(15408B) 全部已存在，无需新生成；无 AUDIO_FAIL
+- **生成页**：run_daily.py → day2026-10-05.html（23544B，覆盖预览页、侧车无 preview 标记、ids 与选中一致）+ days.json 登记（count 24）；字面量反斜杠-u / 反斜杠-U 转义 0 残留（早前正则误报已甄别为 hex 颜色码假阳性，已用字面量计数复核）；经服务 HTTP 200 可达
+- **自动重生成**：gen_master_html.py → master.html（1000 句，0 转义）；gen_views_html.py → review=128 learned / calendar days=24, preview=9, smap=1000, dayIds=58
+- **服务**：端口 3279 /api/status 返回 ok（{"ok":true,"port":3279}），启动前已在运行无需重启；day 页经服务 HTTP 200 可读
+- **学习总结**：streak=5 天（10-01→10-05 连续；09-30 缺口后重新计起）；累计 distinct review 日 24；learned 128/1000；今日新学 0、复习 5；当前激活池 150（总语料 1000）
