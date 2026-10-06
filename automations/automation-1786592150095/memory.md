@@ -1,5 +1,24 @@
 # 自动化执行记录：每日英语口语推送（词力词汇教练）
 
+## 最近执行：2026-10-06
+- **dayIndex = 55**（today 2026-10-06 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 55 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=61 ≠ 55；expansionsDone=1，还差 6 天到下次扩展日 2026-10-12）
+- **幂等守卫**：执行前核查 master.json 无 lastReviewed==2026-10-06 句 + day2026-10-06.html 仅为 gen_future 预览页（侧车 preview=True）→ 今日首次实际推送，安全执行（无重复 mastery 自增）
+- **选中句**：[21, 24, 39, 51, 78]（review 池 random.Random(55).sample(1..150,5)；全为已 introduced 句，今日 0 新学）
+  - s21 How far is it from here?（travel/问路距离, short, 复习 mastery 3→4 rc 3→4）
+  - s24 Is there a pharmacy nearby?（travel/应急药店, short, 复习 mastery 2→3 rc 2→3）
+  - s39 Can I get a refund?（travel/购物退款, short, 复习 mastery 1→2 rc 1→2）
+  - s51 Can you speak more slowly, please?（daily/沟通语速, short, 复习 mastery 1→2 rc 1→2）
+  - s78 Thank you for inviting me.（daily/致谢, short, 复习 mastery 3→4 rc 3→4）
+- **增强内容**：5 句 enh 均 COMPLETE（fullIpa/variants(3)/scenes(3)/grammar/pron 全非空，预置语料自带）
+- **音频**：s21(9792B)/s24(11232B)/s39(8640B)/s51(14544B)/s78(9792B) 全部已存在，无需新生成；无 AUDIO_FAIL
+- **生成页**：run_daily.py → day2026-10-06.html（23407B，覆盖 09-22 gen_future 预览页、侧车无 preview 标记、ids 与选中一致）+ 侧车 day2026-10-06.json（preview=None）+ days.json 登记（count 25）；字节级 **0 转义残留**（backslash-u/U 计数均为 0）；经服务 HTTP 302（?v=BUILD）可达
+- **自动重生成**：gen_master_html.py → master.html（2529550B，1000 句，0 转义，1000 mbadge）；gen_views_html.py → review=128 learned / calendar days=25, preview=8, smap=1000, dayIds=58
+- **服务**：端口 3279 `/api/status` 返回 ok（{"ok":true,"port":3279}），**启动前已在运行无需重启**；/api/mastery 回写探测 `{"ok":true,"id":24,"mastery":3}` 正常；day 页经服务 HTTP 302 可达
+- **学习总结**：streak=6 天（10-01→10-06 连续；09-30 缺口后重新计起）；累计 distinct review 日 25；learned 128/1000；今日新学 0、复习 5；当前激活池 150（总语料 1000）
+- **环境备注**：全程用 venv 绝对路径解释器完成读写与校验；PATH 缺失风险沿用历史绕行。
+
 ## 最近执行：2026-10-04
 - **dayIndex = 53**（today 2026-10-04 − startDate 2026-08-13 + 1）
 - **模式**：review（dayIndex 53 > introDays 20，随机复习，非新学）
