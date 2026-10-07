@@ -540,3 +540,21 @@
 - **自动重生成**：gen_master_html.py → master.html（1000 句，0 转义）；gen_views_html.py → review=128 learned / calendar days=24, preview=9, smap=1000, dayIds=58
 - **服务**：端口 3279 /api/status 返回 ok（{"ok":true,"port":3279}），启动前已在运行无需重启；day 页经服务 HTTP 200 可读
 - **学习总结**：streak=5 天（10-01→10-05 连续；09-30 缺口后重新计起）；累计 distinct review 日 24；learned 128/1000；今日新学 0、复习 5；当前激活池 150（总语料 1000）
+
+## 最近执行：2026-10-07
+- **dayIndex = 56**（today 2026-10-07 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 56 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=61 ≠ 56；expansionsDone=1，还差 5 天到下次扩展日 2026-10-12）
+- **幂等守卫**：执行前核查 master.json 无 lastReviewed==2026-10-07 句 + day2026-10-07.html 仅为 gen_future 预览页（侧车 preview=True）→ 今日首次实际推送，安全执行（无重复 mastery 自增）
+- **选中句**：[3, 78, 122, 134, 144]（random.Random(56).sample(1..150,5)，与预览侧车完全一致；s144 为激活区 101-150 内首次被抽中→新学，其余 4 句复习）
+  - s3 I'd like to book a table for two.（餐厅/订位, travel, 复习 mastery 3→3 rc 3）
+  - s78 Thank you for inviting me.（致谢/道谢, daily, 复习 mastery 5→5 rc 5）
+  - s122 Is there a trolley I can use nearby?（机场/行李, travel, 复习 mastery 2→3 rc 2→3）
+  - s134 Do I have anything to declare? Nothing to declare.（出入境/通关, travel, 复习 mastery 3→4 rc 3→4）
+  - s144 Could you slow down a little, please?（沟通/语速, daily, **新学** introducedDay=56 mastery=1 rc=1）
+- **增强内容**：5 句 enh 均 COMPLETE（fullIpa/variants(3)/scenes(3)/grammar/pron 全非空，预置语料自带）
+- **音频**：s3(12240B)/s78(9792B)/s122(13680B)/s134(20016B)/s144(14400B) 全部已存在，无需新生成；无 AUDIO_FAIL
+- **生成页**：run_daily.py → day2026-10-07.html（23475B，覆盖预览页、侧车无 preview 标记、ids 与选中一致）+ 侧车 day2026-10-07.json（preview=None）+ days.json 登记（count 25→26）；字节级 **0 转义残留**（day 页与 master.html 均 0）；经服务 HTTP 200 可达（final ?v=20260824b）
+- **自动重生成**：gen_master_html.py → master.html（2529553B，1000 句，0 转义）；gen_views_html.py → review=129 learned / calendar days=26, preview=7, smap=1000, dayIds=58
+- **服务**：端口 3279 /api/status 返回 ok（{"ok":true,"port":3279}），**启动前已在运行无需重启**；/api/mastery 回写探测 `{"ok":true,"id":144,"mastery":1}` 正常（fuzzy 仅刷 lastReviewed，本已等于今天，不改掌握度，幂等安全）；day 页经服务 HTTP 200 可读
+- **学习总结**：streak=7 天（10-01→10-07 连续；09-30 缺口后重新计起）；累计 distinct review 日 26；learned 128→**129/1000**；今日新学 1、复习 4；当前激活池 150（总语料 1000）
