@@ -13,7 +13,7 @@
 - **语料 1000 句**（ids 1-1000，原始 100 句 + 900 新句，0 重复；新句来源 sentences_pool_1..9.py，由 expand_corpus.py 幂等合并）。
 - **每日 5 句随机**：`random.Random(dayIndex)` + `sample(可用ids, 5)`，同日幂等、跨日随机；run_daily / push_day / gen_future 三处公式必须完全一致（改一处必须同步另两处）。
 - **每 30 天解锁 +50**：`meta.activeCount` 在 `nextExpansionDay`（已从 31 走到 **61**，即 2026-10-12）起每次 +50 封顶 1000，while 循环可补漏跑。**当前 activeCount=150、expansionsDone=1**。新句被随机抽中即视为引入（introduced 置位）。
-- 语料已**全量预置**（ids 1-1000）且 **1000 句均带完整 enh**（fullIpa/variants/scenes/grammar/pron）——激活区新句被抽中时无需手写增强，不存在「暂未撰写」空 enh。run_daily.py 内的 ENH 字典仅覆盖 id 6–10，是历史兜底。
+- 语料已**全量预置**（ids 1-1000）。增强 ENH 已撰写 **200/1000**（ids 1–200 带完整 fullIpa/variants/scenes/grammar/pron；2026-10-10 回填 151–200 应对 Day61=10-12 解锁），ids 201–1000 待对应解锁批次（+50/30天）逐步回填。run_daily.py 内 ENH 字典仅覆盖 id 6–10，是历史兜底（被选中句缺 enh 时走它）。
 - 分类体系沿用「主题/子类」中文标签（travel：机场/酒店/餐厅/购物/观光/应急…；daily：寒暄/邀约/情绪/表达/俗语…）。
 
 ## 运行/部署
@@ -40,7 +40,7 @@
 ## 乱码根因最终定论（2026-08-24）
 - 现象：day2026-08-22 起未来页中文/emoji 字面量乱码(\U0001f5a3、\u9996\u9875)。曾误判为 charset/浏览器缓存（已排除）。
 - 真因：run_daily.py PAGE 模板中文(\uXXXX 4位)+emoji(\U00XXXXXXXX 8位)以转义字面量存储；gen_future 提取未解码→写 HTML。已两次解码修全(先4位漏8位)，重生成25页，磁盘+线上均 0 转义。
-- serve.py 辅助防缓存：*.html 302 跳转 ?v=BUILD + charset=utf-8 + no-store（BUILD=20260824b；改 serve.py 需重启生效）。线上验证 day2026-08-22/09-11 均 302→干净内容。
+- serve.py 辅助防缓存：*.html 302 跳转 ?v=BUILD + charset=utf-8 + no-store（BUILD=**20261010a**，2026-10-10 千人库扩容+模板重写后撞缓存；改 serve.py 需重启生效）。线上验证 day2026-08-22/09-11 均 302→干净内容。
 
 ## serve.py 两份铁律
 - 生成器内存锁：serve.py 启动 import gen_views_html 锁内存，POST /api/mastery 回写后 importlib.reload 再 main()。改任何 gen_*.py/共享页面必须重启 vocab-serve 否则线上跑旧模块。
