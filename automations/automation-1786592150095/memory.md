@@ -558,3 +558,21 @@
 - **自动重生成**：gen_master_html.py → master.html（2529553B，1000 句，0 转义）；gen_views_html.py → review=129 learned / calendar days=26, preview=7, smap=1000, dayIds=58
 - **服务**：端口 3279 /api/status 返回 ok（{"ok":true,"port":3279}），**启动前已在运行无需重启**；/api/mastery 回写探测 `{"ok":true,"id":144,"mastery":1}` 正常（fuzzy 仅刷 lastReviewed，本已等于今天，不改掌握度，幂等安全）；day 页经服务 HTTP 200 可读
 - **学习总结**：streak=7 天（10-01→10-07 连续；09-30 缺口后重新计起）；累计 distinct review 日 26；learned 128→**129/1000**；今日新学 1、复习 4；当前激活池 150（总语料 1000）
+
+## 最近执行：2026-10-11
+- **dayIndex = 60**（today 2026-10-11 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 60 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=61 ≠ 60；expansionsDone=1，还差 1 天到下次扩展日 2026-10-12）
+- **服务**：端口 3279 `/api/status` 启动前 **DOWN**（curl exit 7）→ 本次以托管后台任务（task p40RqL）重启 serve.py，验证 /api/status ok、/api/mastery 回写可用（fuzzy 探测 s148 mastery=1 幂等）、day 页经服务 HTTP 302 可达
+- **幂等守卫**：执行前核查 master.json 无 lastReviewed==2026-10-11 句 + day2026-10-11.html 仅为 gen_future 预览页（侧车 preview=True）→ 今日首次实际推送，安全执行（无重复 mastery 自增）
+- **选中句**：[40, 68, 73, 79, 148]（review 池 random.Random(60).sample(1..150,5)，与预览侧车一致；s148 为激活区 101-150 内首次被抽中→新学，其余 4 句复习）
+  - s40 Where are the changing rooms?（购物/试穿, travel, 复习 mastery 2→3 rc 2→3）
+  - s68 Maybe another time.（邀约/改期, daily, 复习 mastery 1→2 rc 1→2）
+  - s73 I had a long day at work.（闲聊/工作, daily, 复习 mastery 2→3 rc 2→3）
+  - s79 You're welcome.（礼貌/回应, daily, 复习 mastery 2→3 rc 2→3）
+  - s148 I'd like a single ticket to Central Station.（交通/购票, travel, **新学** introducedDay=60 mastery=1 rc=1）
+- **增强内容**：5 句 enh 均 COMPLETE（fullIpa/variants(3)/scenes(3)/grammar/pron 全非空，预置语料自带）
+- **音频**：s40(10512B)/s68(8640B)/s73(10800B)/s79(6336B)/s148(16416B) 全部已存在，无需新生成；无 AUDIO_FAIL
+- **生成页**：run_daily.py → day2026-10-11.html（23114B，覆盖预览页、侧车无 preview 标记、ids 与选中一致）+ days.json 登记（count 30）；字节级 **0 转义残留**（backslash-u/U 计数均为 0）；经服务 HTTP 302 可达
+- **自动重生成**：gen_master_html.py → master.html（1000 句）；gen_views_html.py → review=130 learned / calendar days=30, preview=3, smap=1000, dayIds=58
+- **学习总结**：streak=11 天（10-01→10-11 连续，10-08/09/10 经核查均有真实 lastReviewed 写回）；累计 distinct review 日 30；learned 129→**130/1000**；今日新学 1、复习 4；当前激活池 150（总语料 1000）
