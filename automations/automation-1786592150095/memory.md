@@ -1,5 +1,23 @@
 # 自动化执行记录：每日英语口语推送（词力词汇教练）
 
+## 最近执行：2026-10-16
+- **dayIndex = 65**（today 2026-10-16 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 65 > introDays 20，随机复习，非新学）
+- **阶段扩展（漏跑补扩）**：触发！nextExpansionDay=61 ≤ 65 且 activeCount=150<1000 → run_daily.py 内置 while 循环补做 day61 扩展：activeCount 150→**200**、nextExpansionDay 61→**91**、expansionsDone 1→**2**（10-12~10-15 自动化未跑导致漏扩，今日补回；ids 151-200 进入随机池，ENH 已完整、音频懒生成）
+- **幂等守卫**：执行前核查 master.json 无 lastReviewed==2026-10-16 + day2026-10-16.html 不存在 → 今日首次实际推送，安全执行（无重复 mastery 自增）
+- **选中句**：[57, 74, 107, 114, 132]（review 池 random.Random(65).sample(1..200,5)；s114 为激活区 101-150 内此前未引入句→新学，其余 4 句复习）
+  - s57 If it's not too much trouble, could you let me know when we arrive at the museum?（交通/提醒, travel, long, 复习 m2→2 rc2）
+  - s74 Could you do me a favor?（请求/帮忙, daily, short, 复习 m2→2 rc2）
+  - s107 Can I pay for the extra bag at the counter?（机场/值机, travel, short, 复习 m2→2 rc2）
+  - s114 I missed my connection because of the delay.（机场/延误, travel, short, **新学** introducedDay=65 m=1 rc=1）
+  - s132 Here are my passport and return ticket.（出入境/通关, travel, short, 复习 m4→4 rc4）
+- **增强内容**：5 句 enh 均 COMPLETE（fullIpa/variants(3)/scenes(3)/grammar/pron 全非空，预置语料自带）
+- **音频**：s57(26208B)/s74(8928B)/s107(15552B)/s114(14976B)/s132(15840B) 全部已存在，无需新生成；无 AUDIO_FAIL
+- **生成页**：run_daily.py → day2026-10-16.html（24409B，title「英语口语 Day 65 · 增强版」）+ 侧车 day2026-10-16.json（ids 与选中一致）+ days.json 登记（count 31）；字节级 **0 转义残留**；经服务 HTTP 302（?v=BUILD）可达
+- **自动重生成**：gen_master_html.py → master.html（2610709B，1000 句，0 转义）；gen_views_html.py → review.html（181512B）/calendar.html（582576B，0 转义）
+- **服务**：端口 3279 `/api/status` 启动前 **DOWN**（curl exit 7）→ 本次以托管后台任务（task Kxwihq）重启 serve.py，验证 /api/status ok、/api/mastery 回写正常（fuzzy 探测 s114 mastery=1 幂等）、day 页经服务 HTTP 302 可达
+- **学习总结**：streak=1 天（10-12~10-15 自动化未触发断档，今日重新计起；10-07~10-11 均有真实 lastReviewed 写回）；累计 distinct review 日 41；learned 130→**131/1000**；今日新学 1、复习 4；当前激活池 **200**（总语料 1000）
+
 ## 最近执行：2026-10-06
 - **dayIndex = 55**（today 2026-10-06 − startDate 2026-08-13 + 1）
 - **模式**：review（dayIndex 55 > introDays 20，随机复习，非新学）
