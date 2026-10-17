@@ -1,5 +1,18 @@
 # 自动化执行记录：每日英语口语推送（词力词汇教练）
 
+## 最近执行：2026-10-17
+- **dayIndex = 66**（today 2026-10-17 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 66 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=91 ≠ 66；expansionsDone=2；activeCount=200）
+- **幂等守卫**：执行前核查 master.json 无 lastReviewed==2026-10-17 + day2026-10-17.html 不存在 → 首次实际推送，安全
+- **选中句**：[19, 64, 80, 112, 115]（random.Random(66).sample(1..200,5)）；s112/s115 为激活区未 introduced 句→新学
+- **写回**：s19 m1→2 rc2、s64 m1→2 rc2、s80 m2→3 rc3、s112/s115 新学 introducedDay=66 m=1 rc=1、5 句 lastReviewed=2026-10-17
+- **增强**：5 句 enh 均 COMPLETE（预置语料自带）；音频均存在无需新生成；无 AUDIO_FAIL
+- **生成页**：run_daily.py → day2026-10-17.html（23.8KB，0 转义）；days.json 登记（count 32）
+- **自动重生成**：gen_master_html.py → master.html（1000 句，0 转义）；gen_views_html.py → review=133 learned / calendar days=32, preview=0, smap=1000
+- **服务**：端口 3279 启动前 DOWN（curl exit 7）→ 本次后台重启 serve.py（task vQ1wyC），/api/status ok、/api/mastery 回写探测 s112 mastery=1 幂等、day 页经服务 HTTP 302 可达
+- **学习总结**：streak=2 天（10-16→10-17 连续；10-12~10-15 漏推断档）；累计 distinct review 日 41；learned 131→**133/1000**；今日新学 2、复习 3；当前激活池 200（总语料 1000）
+
 ## 最近执行：2026-10-16
 - **dayIndex = 65**（today 2026-10-16 − startDate 2026-08-13 + 1）
 - **模式**：review（dayIndex 65 > introDays 20，随机复习，非新学）
