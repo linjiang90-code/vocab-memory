@@ -1,5 +1,24 @@
 # 自动化执行记录：每日英语口语推送（词力词汇教练）
 
+## 最近执行：2026-10-18
+- **dayIndex = 67**（today 2026-10-18 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 67 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=91 ≠ 67；expansionsDone=2；activeCount=200）
+- **幂等守卫**：执行前核查 master.json 无 lastReviewed==2026-10-18 句 + day2026-10-18.html/侧车均不存在 → 今日首次实际推送，安全执行
+- **选中句**：[20, 30, 105, 120, 197]（review 池 random.Random(67).sample(1..200,5)；s120/s197 为激活区 101-200 内首次被抽中→新学）
+  - s20 Please drop me off at the train station.（交通/打车, travel, 复习 mastery 3→4 rc 4）
+  - s30 What's the Wi-Fi password?（酒店/网络, travel, 复习 mastery 2→3 rc 3）
+  - s105 What's the baggage allowance for economy class?（机场/值机, travel, 复习 mastery 1→2 rc 2）
+  - s120 My luggage seems to be damaged.（机场/行李, travel, **新学** introducedDay=67 mastery=1 rc=1）
+  - s197 Is room service available around the clock?（酒店/服务, travel, **新学** introducedDay=67 mastery=1 rc=1）
+- **增强内容**：5 句 enh 均 COMPLETE（fullIpa/variants/scenes/grammar/pron 全非空，预置语料自带）
+- **音频**：s197 初跑 AUDIO_FAIL（venv 缺失 edge_tts 模块）→ `pip install edge_tts==7.3.1` 后重生成 s197.mp3（16848B）成功；s120.mp3 早已存在（Sep10）、s20/s30/s105 均存在；5 句 mp3 全部 OK；无遗留 AUDIO_FAIL
+- **生成页**：run_daily.py → day2026-10-18.html（23758B，title「英语口语 Day 67 · 增强版」）+ 侧车 day2026-10-18.json（ids=[20,30,105,120,197], preview=None）+ days.json 登记（count 33）；字节级 **0 转义残留**；经服务 HTTP 302 可达
+- **自动重生成**：gen_master_html.py → master.html（2610717B，1000 句，0 转义）；gen_views_html.py → review=135 learned / calendar days=33, preview=0, smap=1000, dayIds=61
+- **服务**：端口 3279 `/api/status` 启动前 **DOWN**（curl exit 7）→ 本次以托管后台任务（task lIZXx3）重启 serve.py，验证 /api/status ok、/api/mastery 回写探测 `{"ok":true,"id":197,"mastery":1}` 幂等、day 页经服务 HTTP 302 可达
+- **环境修复**：venv 内 edge_tts 模块本次缺失（历史运行可用，疑环境漂移）→ 已 pip 安装修复；今后遇 AUDIO_FAIL 优先 `pip show edge_tts` 核查该依赖
+- **学习总结**：streak=3 天（10-16→10-17→10-18 连续；10-12~10-15 曾漏推断档）；累计 distinct review 日 42；learned 133→**135/1000**；今日新学 2、复习 3；当前激活池 200（总语料 1000）
+
 ## 最近执行：2026-10-17
 - **dayIndex = 66**（today 2026-10-17 − startDate 2026-08-13 + 1）
 - **模式**：review（dayIndex 66 > introDays 20，随机复习，非新学）
