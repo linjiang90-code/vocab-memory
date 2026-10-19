@@ -1,5 +1,23 @@
 # 自动化执行记录：每日英语口语推送（词力词汇教练）
 
+## 最近执行：2026-10-19
+- **dayIndex = 68**（today 2026-10-19 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 68 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=91 ≠ 68；expansionsDone=2；activeCount=200）
+- **幂等守卫**：执行前核查 master.json 无 lastReviewed==2026-10-19 句 + day2026-10-19.html 不存在 → 今日首次实际推送，安全执行（无重复 mastery 自增）
+- **选中句**：[120, 129, 177, 190, 192]（review 池 random.Random(68).sample(1..200,5)；s177/s190/s192 为激活区 151-200 内首次被抽中→新学）
+  - s120 My luggage seems to be damaged.（机场/行李, travel, 复习 mastery 1→2 rc 1→2）
+  - s129 What's the purpose of your visit?（出入境/通关, travel, 复习 mastery 2→3 rc 2→3）
+  - s177 Which exit should I take for the shopping mall?（问路/出口, travel, **新学** introducedDay=68 m=1 rc=1）
+  - s190 Could you give me a receipt for the payment?（酒店/退房, travel, **新学** introducedDay=68 m=1 rc=1）
+  - s192 Could I have a wake-up call at six tomorrow?（酒店/服务, travel, **新学** introducedDay=68 m=1 rc=1）
+- **增强内容**：5 句 enh 均 COMPLETE（预置语料自带 fullIpa/variants/scenes/grammar/pron 全非空）
+- **音频**：s177(15264B)/s190(13824B)/s192(14832B) 为本次新学句→由 gen_one.py+edge-tts 生成成功；s120(13248B)/s129(12096B) 已存在；5 句 mp3 全部 OK；无 AUDIO_FAIL
+- **生成页**：run_daily.py → day2026-10-19.html + 侧车 day2026-10-19.json（ids 与选中一致, preview=None）+ days.json 登记（count 34）；字节级 **0 转义残留**；经服务 HTTP 302 可达
+- **自动重生成**：gen_master_html.py → master.html（1000 句，0 转义）；gen_views_html.py → review=138 learned / calendar days=34, preview=0, smap=1000, dayIds=62
+- **服务**：端口 3279 `/api/status` 启动前 **DOWN**（curl exit 7）→ 本次后台重启 serve.py（task 3W8dkS），验证 /api/status ok、/api/mastery 回写探测 s192 mastery=1 幂等、day 页经服务 HTTP 302 可达
+- **学习总结**：streak=4 天（10-16→10-19 连续）；累计 distinct review 日 43；learned 135→**138/1000**；今日新学 3、复习 2；当前激活池 200（总语料 1000）
+
 ## 最近执行：2026-10-18
 - **dayIndex = 67**（today 2026-10-18 − startDate 2026-08-13 + 1）
 - **模式**：review（dayIndex 67 > introDays 20，随机复习，非新学）
