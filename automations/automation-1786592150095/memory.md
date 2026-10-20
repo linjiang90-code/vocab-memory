@@ -1,5 +1,23 @@
 # 自动化执行记录：每日英语口语推送（词力词汇教练）
 
+## 最近执行：2026-10-20
+- **dayIndex = 69**（today 2026-10-20 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 69 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=91 ≠ 69；expansionsDone=2；activeCount=200）
+- **幂等守卫**：执行前核查 master.json 无 lastReviewed==2026-10-20 + day2026-10-20.html/侧车均不存在 → 今日首次实际推送，安全执行（无重复 mastery 自增）
+- **选中句**：[10, 18, 25, 43, 176]（review 池 random.Random(69).sample(1..200,5)；s176 为激活区 151-200 内首次被抽中→新学，其余 4 句复习）
+  - s10 I seem to have lost my way — could you tell me how to get to the city center from here?（问路/迷路, travel, long, 复习 m5 rc5）
+  - s18 Where should I go for passport control?（机场/出入境, travel, short, 复习 m2→2 rc2）
+  - s25 I'd like to check in, please.（酒店/入住, travel, short, 复习 m2→2 rc2）
+  - s43 What time does the museum open?（观光/时间, travel, short, 复习 m5 rc5）
+  - s176 Is the museum within this district?（问路/地点, travel, short, **新学** introducedDay=69 m=1 rc=1）
+- **增强内容**：5 句 enh 均 COMPLETE（预置语料自带 fullIpa/variants(3)/scenes(3)/grammar/pron 全非空）
+- **音频**：s10(27216B)/s18(14400B)/s25(12240B)/s43(12384B)/s176(14688B) 全部已存在，无需新生成；无 AUDIO_FAIL
+- **生成页**：run_daily.py → day2026-10-20.html（24464B，title「英语口语 Day 69 · 增强版」）+ 侧车 day2026-10-20.json（ids 与选中一致）+ days.json 登记（count 35）；字节级 **0 转义残留**；经服务 HTTP 200 可达（?v=20261010a）
+- **自动重生成**：gen_master_html.py → master.html（1000 句，0 转义）；gen_views_html.py → review=139 learned / calendar days=35, preview=0, smap=1000, dayIds=63
+- **服务**：端口 3279 `/api/status` 启动前 **DOWN**（curl exit 7）→ 本次后台重启 serve.py（task EJ1YCF），验证 /api/status ok、/api/mastery 回写探测 s176 mastery=1 幂等、day 页经服务 HTTP 200 可达
+- **学习总结**：streak=5 天（10-16→10-20 连续）；累计 distinct review 日 35；learned 138→**139/1000**；今日新学 1、复习 4；当前激活池 200（总语料 1000）
+
 ## 最近执行：2026-10-19
 - **dayIndex = 68**（today 2026-10-19 − startDate 2026-08-13 + 1）
 - **模式**：review（dayIndex 68 > introDays 20，随机复习，非新学）
