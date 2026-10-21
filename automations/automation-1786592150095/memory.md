@@ -1,5 +1,23 @@
 # 自动化执行记录：每日英语口语推送（词力词汇教练）
 
+## 最近执行：2026-10-21
+- **dayIndex = 70**（today 2026-10-21 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 70 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=91 ≠ 70；expansionsDone=2；activeCount=200）
+- **幂等守卫**：执行前核查 master.json 无 lastReviewed==2026-10-21 句 + day2026-10-21.html 不存在 → 今日首次实际推送，安全执行（无重复 mastery 自增）
+- **选中句**：[31, 76, 116, 118, 180]（review 池 random.Random(70).sample(1..200,5)；s116/s180 为激活区首次被抽中→新学）
+  - s31 Could we have the menu, please?（餐厅/点餐, travel, short, 复习 mastery 1→2 rc 1→2）
+  - s76 I'm really sorry to hear that; is there anything I can do to help?（慰问/关心, daily, long, 复习 mastery 1→2 rc 1→2）
+  - s116 Is there any compensation for the delayed flight?（机场/延误索赔, travel, short, **新学** introducedDay=70 mastery=1 rc=1）
+  - s118 Where can I claim my checked luggage?（机场/行李, travel, short, 复习 mastery 2→3 rc 2→3）
+  - s180 I'd like to book a double room for two nights.（酒店/预订, travel, short, **新学** introducedDay=70 mastery=1 rc=1）
+- **增强内容**：5 句 enh 均 COMPLETE（预置语料自带 fullIpa/variants(3)/scenes(3)/grammar/pron 全非空）
+- **音频**：s31(11664B)/s76(23904B)/s118(13392B) 已存在；s116(17424B)/s180(16704B) 为本次新学句→由 gen_one.py+edge-tts 生成成功；5 句 mp3 全部 OK；无 AUDIO_FAIL
+- **生成页**：run_daily.py → day2026-10-21.html（24299B，title「英语口语 Day 70 · 增强版」）+ 侧车 day2026-10-21.json（ids 与选中一致）+ days.json 登记（count 36）；字节级 **0 转义残留**；经服务 HTTP 302（?v=BUILD）可达
+- **自动重生成**：gen_master_html.py → master.html（2610731B，1000 句，0 转义）；gen_views_html.py → review.html（195721B）/calendar.html（582850B）均已刷新 mtime
+- **服务**：端口 3279 `/api/status` 启动前 **DOWN**（curl exit 7）→ 本次以托管后台任务（task Hg33yB）重启 serve.py，验证 /api/status ok、/api/mastery 回写探测 `{"ok":true,"id":118,"mastery":3}`（fuzzy 仅刷 lastReviewed，不改掌握度，幂等安全）、day 页经服务 HTTP 302 可达
+- **学习总结**：streak=6 天（10-16→10-21 连续）；累计 distinct review 日 36；learned 139→**141/1000**；今日新学 2、复习 3；当前激活池 200（总语料 1000）
+
 ## 最近执行：2026-10-20
 - **dayIndex = 69**（today 2026-10-20 − startDate 2026-08-13 + 1）
 - **模式**：review（dayIndex 69 > introDays 20，随机复习，非新学）
