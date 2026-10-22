@@ -1,5 +1,23 @@
 # 自动化执行记录：每日英语口语推送（词力词汇教练）
 
+## 最近执行：2026-10-22
+- **dayIndex = 71**（today 2026-10-22 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 71 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=91 ≠ 71；expansionsDone=2；activeCount=200）
+- **幂等守卫**：执行前核查 master.json 无 lastReviewed==2026-10-22 + day2026-10-22.html/侧车均不存在 → 今日首次实际推送，安全执行（无重复 mastery 自增）
+- **选中句**：[3, 68, 83, 131, 159]（review 池 random.Random(71).sample(1..200,5)；s131/s159 为激活区 151-200 内首次被抽中→新学，其余 3 句复习）
+  - s3 I'd like to book a table for two.（餐厅/预订, travel, short, 复习 mastery 3→4 rc 3→4）
+  - s68 Maybe another time.（邀约/改期, daily, short, 复习 mastery 2→3 rc 2→3）
+  - s83 I feel a bit under the weather.（健康/状态, daily, short, 复习 mastery 1→2 rc 1→2）
+  - s131 How long will you be staying in the country?（出入境/通关, travel, short, **新学** introducedDay=71 mastery=1 rc=1）
+  - s159 Do I need an international driving permit?（交通/租车, travel, short, **新学** introducedDay=71 mastery=1 rc=1）
+- **增强内容**：5 句 enh 均 COMPLETE（预置语料自带 fullIpa/variants(3)/scenes(3)/grammar/pron 全非空）
+- **音频**：s3(12240B)/s68(8640B)/s83(11088B) 已存在；s131(14256B)/s159(14832B) 为本次新学句→由 gen_one.py+edge-tts 生成成功；5 句 mp3 全部 OK；无 AUDIO_FAIL
+- **生成页**：run_daily.py → day2026-10-22.html（23763B，title「英语口语 Day 71 · 增强版」）+ 侧车 day2026-10-22.json（ids 与选中一致）+ days.json 登记（count 37）；字节级 **0 转义残留**；经服务 HTTP 302（?v=BUILD）可达
+- **自动重生成**：gen_master_html.py → master.html（2610735B，1000 句，0 转义）；gen_views_html.py 已刷新
+- **服务**：端口 3279 `/api/status` 启动前 **DOWN**（curl exit 7）→ 本次以托管后台任务（task V2Su7r）重启 serve.py，验证 /api/status ok、/api/mastery 回写探测 `{"ok":true,"id":131,"mastery":1}`（fuzzy 仅刷 lastReviewed，不改掌握度，幂等安全）、day 页经服务 HTTP 302 可达
+- **学习总结**：streak=7 天（10-16→10-22 连续）；累计 distinct review 日 37；learned 141→**143/1000**；今日新学 2、复习 3；当前激活池 200（总语料 1000）
+
 ## 最近执行：2026-10-21
 - **dayIndex = 70**（today 2026-10-21 − startDate 2026-08-13 + 1）
 - **模式**：review（dayIndex 70 > introDays 20，随机复习，非新学）
