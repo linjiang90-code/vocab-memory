@@ -1,5 +1,24 @@
 # 自动化执行记录：每日英语口语推送（词力词汇教练）
 
+## 最近执行：2026-10-24
+- **dayIndex = 73**（today 2026-10-24 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 73 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=91 ≠ 73；expansionsDone=2；activeCount=200）
+- **幂等守卫**：执行前核查 master.json 无 lastReviewed==2026-10-24 + day2026-10-24.html/侧车均不存在 → 今日首次实际推送，安全执行（无重复 mastery 自增）
+- **缺口观察**：2026-10-23 自动化未触发（无 lastReviewed 该日、无日页）→ 连续 streak 由 10-22 断档，今日重新计起
+- **选中句**：[32, 72, 123, 129, 145]（review 池 random.Random(73).sample(1..200,5)；s145 为激活区 101-200 内此前未引入句→新学，其余 4 句复习）
+  - s32 I'm allergic to peanuts.（应急/过敏, travel, short, 复习 mastery 1→2 rc 1→2）
+  - s72 How was your day?（闲聊/问候, daily, short, 复习 mastery 1→2 rc 1→2）
+  - s123 I'd like to report a lost suitcase, please.（机场/行李, travel, short, 复习 mastery 1→2 rc 1→2）
+  - s129 What's the purpose of your visit?（出入境/通关, travel, short, 复习 mastery 3→4 rc 3→4）
+  - s145 Keep the change, thank you.（购物/支付, travel, short, **新学** introducedDay=73 mastery=1 rc=1）
+- **增强内容**：5 句 enh 均 COMPLETE（fullIpa/variants(3)/scenes(3)/grammar/pron 全非空，预置语料自带）
+- **音频**：s32(11088B)/s72(6912B)/s123(20448B)/s129(12096B)/s145(12240B) 全部已存在（s145 由本次 run_daily+edge-tts 生成）；无 AUDIO_FAIL
+- **生成页**：run_daily.py → day2026-10-24.html（23093B，title「英语口语 Day 73 · 增强版」）+ 侧车 day2026-10-24.json（ids 与选中一致, preview=None）+ days.json 登记（count 38）；字节级 **0 转义残留**；经服务 HTTP 302（?v=20261010a）可达
+- **自动重生成**：gen_master_html.py → master.html（2610737B，1000 句，0 转义）；gen_views_html.py → review.html/calendar.html（mtime 09:08:33）
+- **服务**：端口 3279 `/api/status` 启动前 **DOWN**（curl exit 7）→ 本次以托管后台任务（task NoAPjQ）重启 serve.py，验证 /api/status ok、/api/mastery 回写探测 `{"ok":true,"id":145,"mastery":1}`（fuzzy 仅刷 lastReviewed，不改掌握度，幂等安全）、day 页经服务 HTTP 302 可达
+- **学习总结**：streak=1 天（10-23 漏推断档，今日重新计起）；累计 distinct review 日 44；learned 143→**144/1000**；今日新学 1、复习 4；当前激活池 200（总语料 1000）
+
 ## 最近执行：2026-10-22
 - **dayIndex = 71**（today 2026-10-22 − startDate 2026-08-13 + 1）
 - **模式**：review（dayIndex 71 > introDays 20，随机复习，非新学）
