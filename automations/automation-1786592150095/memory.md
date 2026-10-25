@@ -1,5 +1,23 @@
 # 自动化执行记录：每日英语口语推送（词力词汇教练）
 
+## 最近执行：2026-10-25
+- **dayIndex = 74**（today 2026-10-25 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 74 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=91 ≠ 74；expansionsDone=2；activeCount=200）
+- **幂等守卫**：执行前核查 master.json 无 lastReviewed==2026-10-25 句 + day2026-10-25.html/侧车均不存在 → 今日首次实际推送，安全执行（无重复 mastery 自增）
+- **选中句**：[30, 31, 82, 132, 157]（review 池 random.Random(74).sample(1..200,5)；s157 为激活区 151-200 内此前未引入句→新学，其余 4 句复习）
+  - s30 What's the Wi-Fi password?（酒店/网络, travel, short, 复习 mastery 3→4 rc 3→4）
+  - s31 Could we have the menu, please?（餐厅/点餐, travel, short, 复习 mastery 2→3 rc 2→3）
+  - s82 I'm on a diet.（日常/节食, daily, short, 复习 mastery 1→2 rc 1→2）
+  - s132 Here are my passport and return ticket.（出入境/通关, travel, short, 复习 mastery 4→5(封顶) rc 4→5）
+  - s157 I'd like to rent a compact car for three days.（交通/租车, travel, short, **新学** introducedDay=74 mastery=1 rc=1）
+- **增强内容**：5 句 enh 均 COMPLETE（fullIpa/variants/scenes/grammar/pron 全非空，预置语料自带）
+- **音频**：s30(11376B)/s31(11664B)/s82(7488B)/s132(15840B)/s157(17712B) 全部已存在（s157 由本次 run_daily+edge-tts 生成）；无 AUDIO_FAIL
+- **生成页**：run_daily.py → day2026-10-25.html（23794B，title「英语口语 Day 74 · 增强版」）+ 侧车 day2026-10-25.json（ids 与选中一致, preview=None）+ days.json 登记（count 39）；字节级 **0 转义残留**；经服务 HTTP 302（?v=20261010a）可达
+- **自动重生成**：gen_master_html.py → master.html（2610740B，1000 句，0 转义）；gen_views_html.py → review.html/calendar.html（run_daily 尾部已重生成）
+- **服务**：端口 3279 `/api/status` 启动前 **DOWN**（curl exit 7）→ 本次以托管后台任务（task GFytgj）重启 serve.py，验证 /api/status ok、/api/mastery 回写探测 `{"ok":true,"id":132,"mastery":5}`（fuzzy 仅刷 lastReviewed，不改掌握度，幂等安全）、day 页经服务 HTTP 302 可达
+- **学习总结**：streak=2 天（10-24→10-25 连续；10-23 漏推断档后重起）；累计 distinct review 日 39；learned 144→**145/1000**；今日新学 1、复习 4；当前激活池 200（总语料 1000）
+
 ## 最近执行：2026-10-24
 - **dayIndex = 73**（today 2026-10-24 − startDate 2026-08-13 + 1）
 - **模式**：review（dayIndex 73 > introDays 20，随机复习，非新学）
