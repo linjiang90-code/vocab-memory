@@ -1,5 +1,23 @@
 # 自动化执行记录：每日英语口语推送（词力词汇教练）
 
+## 最近执行：2026-10-26
+- **dayIndex = 75**（today 2026-10-26 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 75 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=91 ≠ 75；expansionsDone=2；activeCount=200）
+- **幂等守卫**：执行前核查 master.json 无 lastReviewed==2026-10-26 + day2026-10-26.html/侧车均不存在 → 今日首次实际推送，安全执行（无重复 mastery 自增）
+- **选中句**：[11, 112, 116, 117, 150]（review 池 random.Random(75).sample(1..200,5)；全为已 introduced 句、全 travel 主题，今日 0 新学）
+  - s11 Where can I buy a ticket to the city center?（交通/购票, travel, short, 复习 mastery 4→5(封顶) rc 6）
+  - s112 How much layover time do I have between the flights?（机场/转机, travel, long, 复习 mastery 1→2 rc 2）
+  - s116 Is there any compensation for the delayed flight?（机场/延误, travel, short, 复习 mastery 1→2 rc 2）
+  - s117 How long is the flight expected to be delayed?（机场/延误, travel, short, 复习 mastery 2→3 rc 3）
+  - s150 Does this train stop at every station?（交通/火车, travel, short, 复习 mastery 1→2 rc 2）
+- **增强内容**：5 句 enh 均 COMPLETE（预置语料自带 fullIpa/variants/scenes/grammar/pron 全非空）
+- **音频**：s11(14832B)/s112(19008B)/s116(17424B)/s117(17568B)/s150(14832B) 全部已存在，无 AUDIO_FAIL
+- **生成页**：run_daily.py → day2026-10-26.html（23911B，title「英语口语 Day 75 · 增强版」）+ 侧车 day2026-10-26.json（ids 与选中一致）+ days.json 登记（count 40）；字节级 **0 转义残留**；经服务 HTTP 302（?v=20261010a）可达
+- **自动重生成**：gen_master_html.py → master.html（1000 句，0 转义）；gen_views_html.py → review/calendar 已刷新
+- **服务**：端口 3279 `/api/status` 启动前 **DOWN**（curl exit 7）→ 本次以托管后台任务（task 0o30Ut）重启 serve.py，验证 /api/status ok、/api/mastery 回写探测 `{"ok":true,"id":116,"mastery":2}`（fuzzy 仅刷 lastReviewed，不改掌握度，幂等安全）、day 页经服务 HTTP 302 可达
+- **学习总结**：streak=3 天（10-24→10-25→10-26 连续）；累计 distinct review 日 46；learned **145/1000**（今日 0 新学）；今日新学 0、复习 5；当前激活池 200（总语料 1000）
+
 ## 最近执行：2026-10-25
 - **dayIndex = 74**（today 2026-10-25 − startDate 2026-08-13 + 1）
 - **模式**：review（dayIndex 74 > introDays 20，随机复习，非新学）
