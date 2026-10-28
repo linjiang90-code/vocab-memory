@@ -1,5 +1,23 @@
 # 自动化执行记录：每日英语口语推送（词力词汇教练）
 
+## 最近执行：2026-10-28
+- **dayIndex = 77**（today 2026-10-28 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 77 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=91 ≠ 77；expansionsDone=2；activeCount=200）
+- **幂等守卫**：执行前核查 master.json 无 lastReviewed==2026-10-28 + day2026-10-28.html/侧车均不存在 → 今日首次实际推送，安全执行（无重复 mastery 自增）
+- **选中句**：[50, 51, 62, 65, 84]（review 池 random.Random(77).sample(1..200,5)；全为已 introduced 句，今日 0 新学）
+  - s50 I've missed my flight.（应急/误机, travel, short, 复习 mastery 2→3 rc 2→3）
+  - s51 Can you speak more slowly, please?（沟通/语速, travel, short, 复习 mastery 3→4 rc 3→4）
+  - s62 Where are you from?（寒暄/来源, daily, short, 复习 mastery 1→2 rc 1→2）
+  - s65 Let's keep in touch.（社交/联系, daily, short, 复习 mastery 1→2 rc 1→2）
+  - s84 Can you believe it?（感叹/惊讶, daily, short, 复习 mastery 1→2 rc 1→2）
+- **增强内容**：5 句 enh 均 COMPLETE（预置语料自带 fullIpa/variants/scenes/grammar/pron 全非空）
+- **音频**：s50(8640B)/s51(14544B)/s62(7056B)/s65(8640B)/s84(7632B) 全部已存在（s51 为激活区 51 内此前生成），无需新生成；无 AUDIO_FAIL
+- **生成页**：run_daily.py → day2026-10-28.html（23081B，title「英语口语 Day 77 · 增强版」）+ 侧车 day2026-10-28.json（ids=[50,51,62,65,84], preview=None）+ days.json 登记（count 41）；字节级 **0 转义残留**；经服务 HTTP 302（?v=20261010a）可达
+- **自动重生成**：gen_master_html.py → master.html（2610740B，1000 句，0 转义）
+- **服务**：端口 3279 `/api/status` 启动前 **DOWN**（curl exit 7）→ 本次以托管后台任务（task x1pVGe）重启 serve.py，验证 /api/status ok、/api/mastery 回写探测 `{"ok":true,"id":50,"mastery":3}`（fuzzy 仅刷 lastReviewed，不改掌握度，幂等安全）、day 页经服务 HTTP 302 可达
+- **学习总结**：streak=1 天（10-27 自动化未触发断档，今日重新计起）；累计 distinct review 日 45；learned 145/1000（今日 0 新学）；今日新学 0、复习 5；当前激活池 200（总语料 1000）
+
 ## 最近执行：2026-10-26
 - **dayIndex = 75**（today 2026-10-26 − startDate 2026-08-13 + 1）
 - **模式**：review（dayIndex 75 > introDays 20，随机复习，非新学）
