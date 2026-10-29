@@ -1,5 +1,23 @@
 # 自动化执行记录：每日英语口语推送（词力词汇教练）
 
+## 最近执行：2026-10-29
+- **dayIndex = 78**（today 2026-10-29 − startDate 2026-08-13 + 1）
+- **模式**：review（dayIndex 78 > introDays 20，随机复习，非新学）
+- **阶段扩展**：未触发（nextExpansionDay=91 ≠ 78；expansionsDone=2；activeCount=200）
+- **幂等守卫**：执行前核查 master.json 无 lastReviewed==2026-10-29 句 + day2026-10-29.html/侧车均不存在 → 今日首次实际推送，安全执行（无重复 mastery 自增）
+- **选中句**：[25, 49, 77, 171, 187]（review 池 random.Random(78).sample(1..200,5)；s171/s187 为激活区 151-200 内此前未引入句→新学，其余 3 句复习）
+  - s25 I'd like to check in, please.（酒店/入住, travel, short, 复习 mastery 2→3 rc 2→3）
+  - s49 Call the police, please.（应急/安全, travel, short, 复习 mastery 2→3 rc 2→3）
+  - s77 Congratulations on your promotion!（祝贺/职场, daily, short, 复习 mastery 3→4 rc 3→4）
+  - s171 Am I heading in the right direction for the park?（问路/方向, travel, long, **新学** introducedDay=78 mastery=1 rc=1）
+  - s187 Could I leave my luggage here until the room is ready?（酒店/寄存, travel, long, **新学** introducedDay=78 mastery=1 rc=1）
+- **增强内容**：5 句 enh 均 COMPLETE（预置语料自带 fullIpa/variants(3)/scenes(3)/grammar/pron 全非空）
+- **音频**：s25(12240B)/s49(11808B)/s77(13968B)/s171(15840B)/s187(17424B) 全部已存在，无 AUDIO_FAIL
+- **生成页**：run_daily.py → day2026-10-29.html（23900B，title「英语口语 Day 78 · 增强版」）+ 侧车 day2026-10-29.json（ids=[25,49,77,171,187], preview=None）+ days.json 登记（count 42）；字节级 **0 转义残留**；经服务 HTTP 200（?v=20261010a）可达
+- **自动重生成**：gen_master_html.py → master.html（2610744B，1000 句，0 转义）
+- **服务**：端口 3279 `/api/status` 启动前 **DOWN**（curl exit 7）→ 本次以托管后台任务（task mbpPKF）重启 serve.py，验证 /api/status ok、/api/mastery 回写探测 `{"ok":true,"id":171,"mastery":1}`（fuzzy 仅刷 lastReviewed，不改掌握度，幂等安全）、day 页经服务 HTTP 200 可达
+- **学习总结**：streak=2 天（10-28→10-29 连续；10-27 漏推断档）；累计 distinct review 日 46；learned 145→**147/1000**；今日新学 2、复习 3；当前激活池 200（总语料 1000）
+
 ## 最近执行：2026-10-28
 - **dayIndex = 77**（today 2026-10-28 − startDate 2026-08-13 + 1）
 - **模式**：review（dayIndex 77 > introDays 20，随机复习，非新学）
