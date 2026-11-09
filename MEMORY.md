@@ -42,6 +42,17 @@
 - 真因：run_daily.py PAGE 模板中文(\uXXXX 4位)+emoji(\U00XXXXXXXX 8位)以转义字面量存储；gen_future 提取未解码→写 HTML。已两次解码修全(先4位漏8位)，重生成25页，磁盘+线上均 0 转义。
 - serve.py 辅助防缓存：*.html 302 跳转 ?v=BUILD + charset=utf-8 + no-store（BUILD=**20261010a**，2026-10-10 千人库扩容+模板重写后撞缓存；改 serve.py 需重启生效）。线上验证 day2026-08-22/09-11 均 302→干净内容。
 
+## 企业微信推送（2026-11-09 接入）
+- 用户用的是**智能机器人 · API 模式（长连接）**，不是群机器人 Webhook。协议：`wss://openws.work.weixin.qq.com` → `aibot_subscribe{bot_id,secret}`（失败码 **853000 = 凭证错**）→ 30s `ping` 保活 → 收 `aibot_msg_callback` → 推送用 `aibot_send_msg`（chatid/chat_type/msgtype=markdown/`markdown.content`，≤20480B，30 条/分钟）。
+- 模块：`wecom_bot.py`（长连接客户端，aiohttp；**必须先起读循环再发订阅**，否则回执没人消费会被误报成 ack timeout）、`wecom_push.py`（组装每日 5 句卡片；优先走本地 `/api/wecom/push`，服务不可用时降级直连并重试 3 次）。
+- `serve.py` 常驻持有长连接：`GET /api/wecom/state`、`POST /api/wecom/push`，按关键词自动回卡（今日/明天）。改后需重启 vocab-serve。
+- 凭证 `wecom_config.json`、chatid `wecom_state.json`，**均在 .gitignore**（repo 公开）。chatid=`LinJiang`、chat_type=1（单聊）。主动推送前置条件：用户须先给机器人发过消息。
+- **已知冲突**：WorkBuddy.exe 自己也连着同一机器人（PID 可查，netstat 116.31.68.62:443），该机器人同时只允许 1 条长连接 → 互踢 + 偶发 ack timeout，因此推送必须重试。若长期不稳，替代方案是群机器人 Webhook（纯 HTTP，无独占）。
+- 每日 9:00 自动化只备数据（生成页+预览），**不再推企业微信**；卡片由 13 条 `英语提醒·HH:30`（09:30–21:30）DAILY 任务统一推送。
+- **每小时提醒**：`automation_update` 的 rrule **不支持多值 BYHOUR**；`FREQ=HOURLY;BYMINUTE=30` 会被接受但**按创建时间锚定**（BYMINUTE 被忽略）；只有 `FREQ=DAILY;BYHOUR=h;BYMINUTE=m` 精确。故用 13 条单点任务。
+- `wecom_push.py` 4 形态轮换 `mode=(hour-9)%4`：0 全览 / 1 单句精讲 / 2 中译英自测 / 3 发音要点；`--window` 时段守卫（非 9–21 点返回 skipped）；`_resolve_day()` 当天侧车缺失时回退最近一期并注明。
+- **卡片 markdown 铁律**：aibot（智能机器人）的 markdown **不支持任何 HTML**，`<font color="comment">` 只属群机器人 Webhook，用了会被原样显示成标签文本（用户报「乱码」就是这个）。只准用 `#`/`**`/`>`/`[]()` 标准语法，音标行用 `　🔈 far /fɑr/` 纯文本；`wecom_push.py` 已有 `_sanitize_md()` 正则兜底清洗标签。
+
 ## serve.py 两份铁律
 - 生成器内存锁：serve.py 启动 import gen_views_html 锁内存，POST /api/mastery 回写后 importlib.reload 再 main()。改任何 gen_*.py/共享页面必须重启 vocab-serve 否则线上跑旧模块。
 - 假死：端口 LISTENING 但 curl 返回 000 → taskkill 重启。serve.py 已加 while True 自重启 + 端口占用即 exit。
