@@ -7,6 +7,8 @@
 - `<audio>` 必须 appendChild 进 DOM 才出声（远程浏览器要求）；严禁 new Audio() 临时对象直接 play 或只存全局变量不入 DOM。
 - 统一用 Web Audio 引擎 `audio-engine.js`(`window.VocabAudio`：play/loop/stopId/stopAll/isActive)。移动端 `<audio>.playbackRate` 静默失效，必须用 AudioBufferSourceNode.playbackRate。所有页面在主 script 前引 `audio-engine.js`；stopId 内部先 normId('1'/'s1' 都命中)。顺序播放用 onended+兜底定时器双保险。
 - 验证：puppeteer-core 移动端 UA，点 🔊 断言 `#__audioHost__` 内生成 `audio/s{id}.mp3` 且 playing=true。
+- **互斥播放（2026-11-10 修）**：`play()`/`loop()` 起播前必须 `stopAll()`，否则点第二句时第一句继续响。`stopAll(keepId)` 的 keepId 用于 loop 保留自己按钮态；`gen` 代次令牌作废「解码期间已被新点击取代」的旧请求（解码是异步的，不加会竞态叠加）；回退 `<audio>` 路径用 `stopAllFallback(keepId)` 同步互斥；`resetRunBtns(keepId)` 让旧页面按钮也能自动复位。回归测试：`node test_audio_exclusive.js`（4 场景）。
+- **日页内联 JS 改造要批量补历史页**：模板改动只影响新生成页，`day*.html` 已有 100+ 个；用字符串替换批量修（**别用 push_day 重生成——会 mastery+1 / 改 introduced，污染学习数据**）。改完跑 `node --check` 校验内联脚本语法。
 - 音频按需生成：run_daily 选中句缺音频时自动调 `gen_one.py`（VENV_PY + edge-tts）；新激活批次可提前批量预生成。
 
 ## 语料与选句机制（2026-09-10 起）
