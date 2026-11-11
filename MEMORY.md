@@ -10,6 +10,8 @@
 - **互斥播放（2026-11-10 修）**：`play()`/`loop()` 起播前必须 `stopAll()`，否则点第二句时第一句继续响。`stopAll(keepId)` 的 keepId 用于 loop 保留自己按钮态；`gen` 代次令牌作废「解码期间已被新点击取代」的旧请求（解码是异步的，不加会竞态叠加）；回退 `<audio>` 路径用 `stopAllFallback(keepId)` 同步互斥；`resetRunBtns(keepId)` 让旧页面按钮也能自动复位。回归测试：`node test_audio_exclusive.js`（4 场景）。
 - **日页内联 JS 改造要批量补历史页**：模板改动只影响新生成页，`day*.html` 已有 100+ 个；用字符串替换批量修（**别用 push_day 重生成——会 mastery+1 / 改 introduced，污染学习数据**）。改完跑 `node --check` 校验内联脚本语法。
 - 音频按需生成：run_daily 选中句缺音频时自动调 `gen_one.py`（VENV_PY + edge-tts）；新激活批次可提前批量预生成。
+- **音色统一配置（2026-11-11 起）**：音色/语速只写在 `voice_config.py`（`VOICE`/`RATE`/`PITCH`），`gen_one.py`、`gen_audio.py`、`gen_audio_force.py` 全部 import 它，**禁止再在脚本里硬编码音色**。当前 **`en-US-AvaNeural` 女声 + `rate=-15%`**（用户 2026-11-11 选定，要求吐词清晰/好听/语速适中/连读别太快）；旧男声 Andrew、更早 Aria 备份在 `audio_backup_aria/`（已 gitignore）。
+- **换音色必须全量重录**：`venv 解释器 regen_voice.py`（默认重录 1..activeCount+50，可传区间；并发3+重试3+写 .tmp 再 `os.replace` 原子替换，避免播放中读到半个文件）。重录后核对条数/大小/mtime，并确认服务端 `Cache-Control: no-store`（serve.py end_headers 对全类型生效，mp3 也不会被缓存，无需 bump BUILD）。
 
 ## 语料与选句机制（2026-09-10 起）
 - **语料 1000 句**（ids 1-1000，原始 100 句 + 900 新句，0 重复；新句来源 sentences_pool_1..9.py，由 expand_corpus.py 幂等合并）。
