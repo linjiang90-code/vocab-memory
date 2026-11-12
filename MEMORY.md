@@ -12,6 +12,14 @@
 - 音频按需生成：run_daily 选中句缺音频时自动调 `gen_one.py`（VENV_PY + edge-tts）；新激活批次可提前批量预生成。
 - **音色统一配置（2026-11-11 起）**：音色/语速只写在 `voice_config.py`（`VOICE`/`RATE`/`PITCH`），`gen_one.py`、`gen_audio.py`、`gen_audio_force.py` 全部 import 它，**禁止再在脚本里硬编码音色**。当前 **`en-US-AvaNeural` 女声 + `rate=-15%`**（用户 2026-11-11 选定，要求吐词清晰/好听/语速适中/连读别太快）；旧男声 Andrew、更早 Aria 备份在 `audio_backup_aria/`（已 gitignore）。
 - **换音色必须全量重录**：`venv 解释器 regen_voice.py`（默认重录 1..activeCount+50，可传区间；并发3+重试3+写 .tmp 再 `os.replace` 原子替换，避免播放中读到半个文件）。重录后核对条数/大小/mtime，并确认服务端 `Cache-Control: no-store`（serve.py end_headers 对全类型生效，mp3 也不会被缓存，无需 bump BUILD）。
+- **客户端缓存铁律（2026-11-12 二次加固，最终形态）**：企业微信内置浏览器（PC 端 CEF / 手机端 X5）的**媒体缓存按 URL 路径建键**，无视 `Cache-Control: no-store`，**也不认 `?v=` query** —— 所以昨天换 Ava 女声后内嵌浏览器仍放旧男声，外部浏览器却正常（用户实测确认）。
+  - 最终解法：**路径级版本段** `audio/b<BUILD>/sNNN.mp3`。引擎从自身 `<script src="audio-engine.js?v=xxx">` 读版本号（单一事实来源），不硬编码。
+  - `sync_audio_version.py` 用**硬链接**生成 `audio/b<BUILD>/` 目录（不额外占磁盘，gitignore 已忽略 `audio/b*/`）→ 新路径在磁盘上真实存在，**旧版 serve.py 未重启也能当静态文件返回**，这是免重启生效的关键。
+  - `bump_build.py`：一键同步 ① serve.py BUILD ② 全部页面/模板引擎引用 ③ 音频版本目录；`regen_voice.py` 重录后**自动调用**（`--no-bump` 可跳过）。换音色只需改 `voice_config.py` + 跑 regen_voice.py，不会再漏。
+  - serve.py 另有 `/audio/<段>/sNNN.mp3 → audio/sNNN.mp3` 剥段路由兜底（改动需重启生效）。
+  - 引擎 404 自动回退扁平路径 `audio/sNNN.mp3`（场景6 已覆盖），保证「页面先更新、服务后重启」窗口期朗读不挂。
+  - 推送卡片链接改为 `day<date>.html?v=<BUILD>`（`wecom_push._day_link()`），绕过内置浏览器 HTML 缓存。
+  - 排查口诀：磁盘 mtime → 现场重录字节数 → curl 服务端 → 都对了就是客户端缓存；此时**换路径**才是解，清缓存（`debugx5.qq.com` / 企业微信设置→清缓存）只是治症状。
 
 ## 语料与选句机制（2026-09-10 起）
 - **语料 1000 句**（ids 1-1000，原始 100 句 + 900 新句，0 重复；新句来源 sentences_pool_1..9.py，由 expand_corpus.py 幂等合并）。
